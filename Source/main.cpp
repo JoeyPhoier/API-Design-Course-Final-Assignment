@@ -35,11 +35,14 @@ int main(void)
     const int screenWidth = 1920;
     const int screenHeight = 1080;
 
+    //TODO: Move this to a constructor
     InitWindow(screenWidth, screenHeight, "SPACE INVADERS");
 
     SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
 
+    //TODO: Game should always start in the startscreen, no sense in requiring it for the constructor.
     Game game = { State::STARTSCREEN };
+    //TODO: These should not have to be instantiated individually
     Resources resources;
     game.resources = resources;
     game.Launch();
@@ -47,12 +50,11 @@ int main(void)
     
     //--------------------------------------------------------------------------------------
 
+    //TODO: Move to constructor
     InitAudioDevice();
 
+    //TODO: Move to a RAII class that throws.
     auto sound = LoadSound("./hitHurt.ogg");
-    
-
-
 
     // Main game loop
     while (!WindowShouldClose())    // Detect window close button or ESC key
@@ -72,6 +74,7 @@ int main(void)
         //    StopSound(sound);
         //}
 
+    //TODO: This whole loop should be thrown into its own function.
         game.Update();
       
 
@@ -89,6 +92,7 @@ int main(void)
         //----------------------------------------------------------------------------------
     }
 
+    //TODO: Move to Destructor
     CloseAudioDevice();
     
     // De-Initialization
@@ -96,7 +100,8 @@ int main(void)
     CloseWindow();        // Close window and OpenGL context
     //--------------------------------------------------------------------------------------
 
-    std::string filename = "level.txt";  
+    //TODO: What is this doing here?
+    std::string filename = "level.txt";
 
     return 0;
 }

@@ -2,6 +2,7 @@
 #include "raylib.h"
 #include "vector"
 
+//TODO: Turn this into a proper resource manager with RAII
 struct Resources 
 {
 	void Load();

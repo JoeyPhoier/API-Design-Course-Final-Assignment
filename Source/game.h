@@ -4,7 +4,7 @@
 #include "Resources.h"
 #include <string>
 
-
+//TODO: Convert all enums to enum classes.
 enum struct State
 {
 	STARTSCREEN,
@@ -12,6 +12,7 @@ enum struct State
 	ENDSCREEN
 };
 
+//TODO: Consider if using entity enums is the right way to god
 enum struct EntityType
 {
 	PLAYER,
@@ -20,12 +21,14 @@ enum struct EntityType
 	ENEMY_PROJECTILE
 };
 
+//TODO: Should be moved to a highscore specific header.
 struct PlayerData
 {
 	std::string name;
 	int score;
 };
 
+//TODO: Should be moved to a Player specific header.
 struct Player
 {
 public:
@@ -55,8 +58,11 @@ public:
 	Vector2 position = {0,0};
 	int speed = 15; 
 	bool active = true;  
+	//TODO: Should not be null
 	EntityType type = {};
 
+	//TODO: This is probably uncessary. Just get starting pos, and add velocity upwards
+	// Consider making projectiles AABBs, instead of lines
 	// LINE WILL UPDATE WITH POSITION FOR CALCULATIONS
 	Vector2 lineStart = { 0, 0 };
 	Vector2 lineEnd = { 0, 0 };
@@ -66,13 +72,18 @@ public:
 	void Render(Texture2D texture);
 };
 
-struct Wall 
+//TODO: Change name. Should be barrier or something.
+struct Wall
 {
 public: 
-	Vector2 position; 
+	//TODO: Does not need both a position and a rectangle. 
+	Vector2 position;
 	Rectangle rec; 
-	bool active; 
-	Color color; 
+	//TODO: Do all entities need an active flag? Consider getting rid of them.
+	bool active;
+	//TODO: Do all walls need a color member? If so, should probably be static.
+	Color color;
+	//TODO: I would like to see the max health be a static and constexpr value.
 	int health = 50;
 	int radius = 60;
 
@@ -85,10 +96,13 @@ struct Alien
 {
 public:
 	
-	Color color = WHITE; 
+	//TODO: Is this necessary? If all textures are rendered with base color, get rid of this.
+	Color color = WHITE;
 	Vector2 position = {0, 0};
-	int x = 0; 
+	//TODO: Why do they need a position and an x and y?
+	int x = 0;
 	int y = 0; 
+	//TODO: Should be constexpr and static
 	float radius = 30;
 	bool active = true;  
 	bool moveRight = true; 
@@ -102,6 +116,7 @@ public:
 };
 
 
+//TODO: What is this?
 struct Star
 {
 	Vector2 initPosition = { 0, 0 };
@@ -116,6 +131,7 @@ struct Background
 {
 	
 
+	//TODO: Jesus christ. This should just be a png brother.
 	std::vector<Star> Stars;
 
 	void Initialize(int starAmount);
@@ -135,18 +151,22 @@ struct Game
 	// for later, make a file where you can adjust the number of walls (config file) 
 	int wallCount = 5;
 
+	//TODO: Should be be a static value part of alien.
 	//Aliens shooting
 	float shootTimer = 0;
 
 	//Aliens stuff? (idk cause liv wrote this)
 	Rectangle rec = { 0, 0 ,0 ,0 }; 
 
+	//TODO: width and height should be in a vector, probably.
 	int formationWidth = 8;
 	int formationHeight = 5;
 	int alienSpacing = 80;
+	//TODO: What is this.
 	int formationX = 100;
 	int formationY = 50;
 
+	//TODO: Is this necessary?
 	bool newHighScore = false;
 	
 
@@ -171,6 +191,7 @@ struct Game
 	void SaveLeaderboard();
 
 
+	//TODO: Textures should go into their own managers
 	// Entity Storage and Resources
 	Resources resources;
 
@@ -188,6 +209,7 @@ struct Game
 
 
 
+	//TODO: All of these should probably be stored in their respective classes
 	Vector2 playerPos;
 	Vector2 alienPos; 
 	Vector2 cornerPos;
@@ -195,6 +217,7 @@ struct Game
 
 
 
+	//TODO: Theres probably a better way to do this
 	//TEXTBOX ENTER
 	char name[9 + 1] = "\0";      //One extra space required for null terminator char '\0'
 	int letterCount = 0;
@@ -202,6 +225,7 @@ struct Game
 	Rectangle textBox = { 600, 500, 225, 50 };
 	bool mouseOnText = false;
 
+	//TODO: What is this being used for? Doesnt seem necessary.
 	int framesCounter = 0;
 
 };

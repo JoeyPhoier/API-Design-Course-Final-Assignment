@@ -85,6 +85,8 @@ void Game::Continue()
 
 void Game::Launch()
 {
+	//TODO: Get rid of this two step init.
+
 	//LOAD SOME RESOURCES HERE
 	resources.Load();
 }
@@ -95,6 +97,7 @@ void Game::Update()
 	{
 	case State::STARTSCREEN:
 		//Code 
+		//TODO: replace all usages of keyReleased with keydown.
 		if (IsKeyReleased(KEY_SPACE))
 		{
 			Start();
@@ -107,12 +110,14 @@ void Game::Update()
 		//Code
 		if (IsKeyReleased(KEY_Q))
 		{
+			//TODO: Add an early return or something.
 			End();
 		}
 
 		//Update Player
 		player.Update();
 		
+		//TODO: Replace with a for range loop or an algo.
 		//Update Aliens and Check if they are past player
 		for (int i = 0; i < Aliens.size(); i++)
 		{
@@ -124,26 +129,28 @@ void Game::Update()
 			}
 		}
 
+		//TODO: This should probably be processed when the player takes damage, not every frame.
 		//End game if player dies
 		if (player.lives < 1)
 		{
 			End();
 		}
 
+		//TODO: This should probably be processed when an alien is destroyed, not every frame.
 		//Spawn new aliens if aliens run out
 		if (Aliens.size() < 1)
 		{
 			SpawnAliens();
 		}
 
-
+		//TODO: What is the point of this
 		// Update background with offset
 		playerPos = { player.x_pos, (float)player.player_base_height };
 		cornerPos = { 0, (float)player.player_base_height };
 		offset = lineLength(playerPos, cornerPos) * -1;
 		background.Update(offset / 15);
 
-
+		//TODO: Replace these with for loops or algos
 		//UPDATE PROJECTILE
 		for (int i = 0; i < Projectiles.size(); i++)
 		{
@@ -155,6 +162,7 @@ void Game::Update()
 			Walls[i].Update();
 		}
 
+		//TODO: Collision checks should be handled in a separate function, or by member methods.
 		//CHECK ALL COLLISONS HERE
 		for (int i = 0; i < Projectiles.size(); i++)
 		{
@@ -202,6 +210,7 @@ void Game::Update()
 			}
 		}
 
+		//TODO: Player shooting should be handled in player update.
 		//MAKE PROJECTILE
 		if (IsKeyPressed(KEY_SPACE))
 		{
@@ -213,6 +222,7 @@ void Game::Update()
 			Projectiles.push_back(newProjectile);
 		}
 
+		//TODO: Should probably be handled by the alien update.
 		//Aliens Shooting
 		shootTimer += 1;
 		if (shootTimer > 59) //once per second
@@ -233,6 +243,7 @@ void Game::Update()
 			shootTimer = 0;
 		}
 
+		//TODO: Replace with a for range or algo
 		// REMOVE INACTIVE/DEAD ENITITIES
 		for (int i = 0; i < Projectiles.size(); i++)
 		{
@@ -248,6 +259,8 @@ void Game::Update()
 		{
 			if (Aliens[i].active == false)
 			{
+				//TODO: Use a friend member predicate for this
+
 				Aliens.erase(Aliens.begin() + i);
 				i--;
 			}
@@ -271,13 +284,17 @@ void Game::Update()
 		//Exit endscreen
 		if (IsKeyReleased(KEY_ENTER) && !newHighScore)
 		{
+			//TODO: Add an early exit
 			Continue();
 		}
 
 	
+		//TODO: Make the check for newHighScore. Rn its done elsewhere, which it shouldnt be.
 
 		if (newHighScore)
 		{
+			//TODO: Throw cursor changing into its own function.
+
 			if (CheckCollisionPointRec(GetMousePosition(), textBox)) mouseOnText = true;
 			else mouseOnText = false;
 
@@ -352,6 +369,7 @@ void Game::Render()
 	{
 	case State::STARTSCREEN:
 		//Code
+		//TODO: Create a shorthand for this
 		DrawText("SPACE INVADERS", 200, 100, 160, YELLOW);
 
 		DrawText("PRESS SPACE TO BEGIN", 200, 350, 40, YELLOW);
@@ -366,12 +384,15 @@ void Game::Render()
 		background.Render();
 
 		//DrawText("GAMEPLAY", 50, 30, 40, YELLOW);
+		//TODO: Use std::format
 		DrawText(TextFormat("Score: %i", score), 50, 20, 40, YELLOW);
 		DrawText(TextFormat("Lives: %i", player.lives), 50, 70, 40, YELLOW);
 
 		//player rendering 
+		//TODO: Player Render shouldnt require anything
 		player.Render(resources.shipTextures[player.activeTexture]);
 
+		//TODO: All of these should be in range loops or algos
 		//projectile rendering
 		for (int i = 0; i < Projectiles.size(); i++)
 		{
@@ -432,6 +453,7 @@ void Game::Render()
 			//Draw the text explaining how many characters are used
 			DrawText(TextFormat("INPUT CHARS: %i/%i", letterCount, 8), 600, 600, 20, YELLOW);
 
+			//TODO: Another mouseontext check? They should be handled in the same thing.
 			if (mouseOnText)
 			{
 				if (letterCount < 9)
@@ -466,6 +488,7 @@ void Game::Render()
 
 			for (int i = 0; i < Leaderboard.size(); i++)
 			{
+				//TODO: Get rid of draw pointer interpretation, or throw it in a wrapper func.
 				char* tempNameDisplay = Leaderboard[i].name.data();
 				DrawText(tempNameDisplay, 50, 140 + (i * 40), 40, YELLOW);
 				DrawText(TextFormat("%i", Leaderboard[i].score), 350, 140 + (i * 40), 40, YELLOW);
@@ -487,9 +510,11 @@ void Game::SpawnAliens()
 	for (int row = 0; row < formationHeight; row++) {
 		for (int col = 0; col < formationWidth; col++) {
 			Alien newAlien = Alien();
+			//TODO: Why is the alien getting instantated with wrongful data? These should be in the constructor.
 			newAlien.active = true;
 			newAlien.position.x = formationX + 450 + (col * alienSpacing);
 			newAlien.position.y = formationY + (row * alienSpacing);
+			//TODO: Replace with Emplace back
 			Aliens.push_back(newAlien);
 			std::cout << "Find Alien -X:" << newAlien.position.x << std::endl;
 			std::cout << "Find Alien -Y:" << newAlien.position.y << std::endl;
@@ -513,7 +538,9 @@ void Game::InsertNewHighScore(std::string name)
 	PlayerData newData;
 	newData.name = name;
 	newData.score = score;
-
+	
+	//TODO: Maybe replace this with some sort of algo for sorting? Then again, we know its sorted, we just need to insert one new element.
+	// Having an actual sort makes sure that it will always be sorted - if for some reason it gets unsorted, this would never resort it without the sort.
 	for (int i = 0; i < Leaderboard.size(); i++)
 	{
 		if (newData.score > Leaderboard[i].score)
@@ -531,6 +558,8 @@ void Game::InsertNewHighScore(std::string name)
 
 void Game::LoadLeaderboard()
 {
+	//TODO: Maybe Implement this?
+	
 	// CLEAR LEADERBOARD
 
 	// OPEN FILE
@@ -549,6 +578,7 @@ void Game::SaveLeaderboard()
 	// OPEN FILE
 	std::fstream file;
 
+	//TODO: Call close and throw this into a RAII class
 	file.open("Leaderboard");
 
 	if (!file)
@@ -570,6 +600,8 @@ void Game::SaveLeaderboard()
 
 bool Game::CheckCollision(Vector2 circlePos, float circleRadius, Vector2 lineStart, Vector2 lineEnd)
 {
+	//TODO: This whole function should probably be rewritten. For our purposes, we only need to do compare two circles
+	
 	// our objective is to calculate the distance between the closest point on the line to the centre of the circle, 
 	// and determine if it is shorter than the radius.
 
@@ -635,6 +667,7 @@ bool Game::CheckCollision(Vector2 circlePos, float circleRadius, Vector2 lineSta
 
 void Player::Initialize() 
 {
+	// TODO: Get rid of two step init.
 	
 	float window_width = (float)GetScreenWidth();
 	x_pos = window_width / 2;
@@ -644,6 +677,7 @@ void Player::Initialize()
 
 void Player::Update() 
 {
+	// TODO: Move these to an input processing member maybe.
 
 	//Movement
 	direction = 0;
@@ -662,6 +696,7 @@ void Player::Update()
 	{
 		x_pos = 0 + radius;
 	}
+	// TODO: Cast things properly.
 	else if (x_pos > GetScreenWidth() - radius)
 	{
 		x_pos = GetScreenWidth() - radius;
@@ -671,6 +706,7 @@ void Player::Update()
 	//Determine frame for animation
 	timer += GetFrameTime();
 
+	// TODO: Weird check doing a timer comparison twice. 
 	if (timer > 0.4 && activeTexture == 2)
 	{
 		activeTexture = 0;
@@ -689,6 +725,7 @@ void Player::Render(Texture2D texture)
 {
 	float window_height = GetScreenHeight(); 
 
+	//TODO: Make a cleaner shorthand for this. 
 	DrawTexturePro(texture,
 		{
 			0,
@@ -783,6 +820,7 @@ void Alien::Update()
 {
 	int window_width = GetScreenWidth(); 
 
+	 //TODO: This can formated in a cleaner way
 	if (moveRight)
 	{
 		position.x += speed; 

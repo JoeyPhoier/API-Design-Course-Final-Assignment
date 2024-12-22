@@ -3,7 +3,7 @@
 #include <string>
 #include <fstream>
 
-
+//TODO: Is this really necessary?
 struct Entity
 {
 	float x, y;
