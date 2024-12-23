@@ -27,9 +27,6 @@
     <ClCompile Include="Source\game.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Resources.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\level.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -50,7 +47,7 @@
     <ClInclude Include="Source\game.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Resources.h">
+    <ClInclude Include="Source\MyTexture2D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\RayUtils.h">
