@@ -81,8 +81,10 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)Build\$(Configuration)\</OutDir>
     <LibraryPath>$(SolutionDir)External\raylib\lib;$(LibraryPath)</LibraryPath>
-    <IncludePath>$(SolutionDir)External\raylib\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <IncludePath>$(SolutionDir)Source;$(SolutionDir)Source\Entities;$(SolutionDir)External\raylib\include;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
     <IntDir>Build\Intermediate\$(Configuration)\</IntDir>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+    <CodeAnalysisRuleSet>CppCoreCheckRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)Build\$(Configuration)\</OutDir>
@@ -126,7 +128,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
@@ -163,14 +165,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="level.cpp" />
+    <ClCompile Include="Source\Entities\Projectile.cpp" />
     <ClCompile Include="Source\game.cpp" />
+    <ClCompile Include="Source\level.cpp" />
     <ClCompile Include="Source\main.cpp" />
     <ClCompile Include="Source\Resources.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="level.h" />
+    <ClInclude Include="Source\Entities\Projectile.h" />
     <ClInclude Include="Source\game.h" />
+    <ClInclude Include="Source\level.h" />
     <ClInclude Include="Source\RayUtils.h" />
     <ClInclude Include="Source\Resources.h" />
   </ItemGroup>

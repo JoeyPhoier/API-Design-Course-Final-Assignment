@@ -1,8 +1,9 @@
 #pragma once
 #include "raylib.h"
 #include <vector>
-#include "Resources.h"
 #include <string>
+#include "Resources.h"
+#include "Projectile.h"
 
 //TODO: Convert all enums to enum classes.
 enum struct State
@@ -48,28 +49,6 @@ public:
 	void Render(Texture2D texture);
 	void Update();
 	
-};
-
-
-struct Projectile
-{
-public: 
-	// INITIALIZE PROJECTILE WHILE DEFINING IF ITS PLAYER OR ENEMY 
-	Vector2 position = {0,0};
-	int speed = 15; 
-	bool active = true;  
-	//TODO: Should not be null
-	EntityType type = {};
-
-	//TODO: This is probably uncessary. Just get starting pos, and add velocity upwards
-	// Consider making projectiles AABBs, instead of lines
-	// LINE WILL UPDATE WITH POSITION FOR CALCULATIONS
-	Vector2 lineStart = { 0, 0 };
-	Vector2 lineEnd = { 0, 0 };
-
-	void Update();
-
-	void Render(Texture2D texture);
 };
 
 //TODO: Change name. Should be barrier or something.

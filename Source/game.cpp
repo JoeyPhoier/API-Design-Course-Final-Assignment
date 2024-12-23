@@ -157,7 +157,7 @@ void Game::Update()
 		//CHECK ALL COLLISONS HERE
 		for (int i = 0; i < Projectiles.size(); i++)
 		{
-			if (Projectiles[i].type == EntityType::PLAYER_PROJECTILE)
+			if (Projectiles[i].playerProjectile)
 			{
 				for (int a = 0; a < Aliens.size(); a++)
 				{
@@ -176,7 +176,7 @@ void Game::Update()
 			//ENEMY PROJECTILES HERE
 			for (int i = 0; i < Projectiles.size(); i++)
 			{
-				if (Projectiles[i].type == EntityType::ENEMY_PROJECTILE)
+				if (!Projectiles[i].playerProjectile)
 				{
 					if (CheckCollision({player.x_pos, GetScreenHeight() - player.player_base_height }, player.radius, Projectiles[i].lineStart, Projectiles[i].lineEnd))
 					{
@@ -209,7 +209,7 @@ void Game::Update()
 			Projectile newProjectile;
 			newProjectile.position.x = player.x_pos;
 			newProjectile.position.y = window_height - 130;
-			newProjectile.type = EntityType::PLAYER_PROJECTILE;
+			newProjectile.playerProjectile = true;
 			Projectiles.push_back(newProjectile);
 		}
 
@@ -229,7 +229,7 @@ void Game::Update()
 			newProjectile.position = Aliens[randomAlienIndex].position;
 			newProjectile.position.y += 40;
 			newProjectile.speed = -15;
-			newProjectile.type = EntityType::ENEMY_PROJECTILE;
+			newProjectile.playerProjectile = false;
 			Projectiles.push_back(newProjectile);
 			shootTimer = 0;
 		}
@@ -699,8 +699,6 @@ void Player::Update()
 		activeTexture++;
 		timer = 0;
 	}
-
-	
 }
 
 void Player::Render(Texture2D texture) 
@@ -708,29 +706,6 @@ void Player::Render(Texture2D texture)
 	float window_height = GetScreenHeight(); 
 
 	DrawTextureQuick(texture, { x_pos, window_height - player_base_height }, .3f);
-}
-
-void Projectile::Update()
-{
-	position.y -= speed;
-
-	// UPDATE LINE POSITION
-	lineStart.y = position.y - 15;
-	lineEnd.y   = position.y + 15;
-
-	lineStart.x = position.x;
-	lineEnd.x   = position.x;
-
-	if (position.y < 0 || position.y > 1500)
-	{
-		active = false;
-	}
-}
-
-void Projectile::Render(Texture2D texture)
-{
-	//DrawCircle((int)position.x, (int)position.y, 10, RED);
-	DrawTextureQuick(texture, position, .3f);
 }
 
 void Wall::Render(Texture2D texture)

@@ -12,10 +12,3 @@ void Resources::Load()
 	laserTexture = LoadTexture("./Assets/Laser.png");
 	backgroundTexture = LoadTexture("./Assets/Space Background.png");
 }
-/*
-void Resources::Unload()
-{
-	UnloadTexture(barrierTexture);
-	UnloadTexture(alienTexture);
-}
-*/
