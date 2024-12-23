@@ -175,6 +175,7 @@
     <ClCompile Include="Source\Resources.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Collision.h" />
     <ClInclude Include="Source\Entities\Alien.h" />
     <ClInclude Include="Source\Entities\Barrier.h" />
     <ClInclude Include="Source\Entities\PlayerShip.h" />
