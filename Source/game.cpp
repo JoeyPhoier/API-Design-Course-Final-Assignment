@@ -55,6 +55,8 @@ void Game::Start()
 	//reset score
 	score = 0;
 
+	backgroundPos.y = window_height * .5f;
+
 	gameState = State::GAMEPLAY;
 }
 
@@ -139,7 +141,7 @@ void Game::Update()
 		playerPos = { player.x_pos, (float)player.player_base_height };
 		cornerPos = { 0, (float)player.player_base_height };
 		offset = lineLength(playerPos, cornerPos) * -1;
-		backgroundPos.x = -player.x_pos / 15;
+		backgroundPos.x = (GetScreenWidth() * .5f) - player.x_pos / 15;
 
 		//TODO: Replace these with for loops or algos
 		//UPDATE PROJECTILE
@@ -639,36 +641,4 @@ bool Game::CheckCollision(Vector2 circlePos, float circleRadius, Vector2 lineSta
 		// Point is not on the line, line is not colliding
 		return false;
 	}
-}
-
-void Alien::Update() 
-{
-	int window_width = GetScreenWidth(); 
-
-	 //TODO: This can formated in a cleaner way
-	if (moveRight)
-	{
-		position.x += speed; 
-
-		if (position.x >= GetScreenWidth())
-		{
-			moveRight = false; 
-			position.y += 50; 
-		}
-	}
-	else 
-	{
-		position.x -= speed; 
-
-		if (position.x <= 0)
-		{
-			moveRight = true; 
-			position.y += 50; 
-		}
-	}
-}
-
-void Alien::Render(Texture2D texture) 
-{
-	DrawTextureQuick(texture, position, .3f);
 }
