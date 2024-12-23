@@ -42,9 +42,7 @@ void Game::Start()
 		newWalls.position.x = wall_distance * (i + 1); 
 
 		Walls.push_back(newWalls); 
-
 	}
-
 
 	//creating player
 	Player newPlayer;
@@ -53,18 +51,11 @@ void Game::Start()
 
 	//creating aliens
 	SpawnAliens();
-	
-
-	//creating background
-	Background newBackground;
-	newBackground.Initialize(600);
-	background = newBackground;
 
 	//reset score
 	score = 0;
 
 	gameState = State::GAMEPLAY;
-
 }
 
 void Game::End()
@@ -148,7 +139,7 @@ void Game::Update()
 		playerPos = { player.x_pos, (float)player.player_base_height };
 		cornerPos = { 0, (float)player.player_base_height };
 		offset = lineLength(playerPos, cornerPos) * -1;
-		background.Update(offset / 15);
+		backgroundPos.x = -player.x_pos / 15;
 
 		//TODO: Replace these with for loops or algos
 		//UPDATE PROJECTILE
@@ -381,7 +372,21 @@ void Game::Render()
 
 
 		//background render LEAVE THIS AT TOP
-		background.Render();
+		DrawTexturePro(resources.backgroundTexture,
+					   {
+						   0,
+						   0,
+						   static_cast<float>(resources.backgroundTexture.width),
+						   static_cast<float>(resources.backgroundTexture.height),
+					   },
+		{
+			backgroundPos.x,
+			backgroundPos.y,
+			static_cast<float>(resources.backgroundTexture.width * 1.1f),
+			static_cast<float>(resources.backgroundTexture.height * 1.1f),
+		}, { 0 , 0 },
+		0,
+		WHITE);
 
 		//DrawText("GAMEPLAY", 50, 30, 40, YELLOW);
 		//TODO: Use std::format
@@ -866,113 +871,3 @@ void Alien::Render(Texture2D texture)
 		0,
 		WHITE);
 }
-
-
-//BACKGROUND
-void Star::Update(float starOffset)
-{
-	position.x = initPosition.x + starOffset;
-	position.y = initPosition.y;
-
-}
-
-void Star::Render()
-{
-	DrawCircle((int)position.x, (int)position.y, size, color);
-}
-
-
-void Background::Initialize(int starAmount)
-{
-	for (int i = 0; i < starAmount; i++)
-	{
-		Star newStar;
-
-		newStar.initPosition.x = GetRandomValue(-150, GetScreenWidth() + 150);
-		newStar.initPosition.y = GetRandomValue(0, GetScreenHeight());
-		
-		//random color?
-		newStar.color = SKYBLUE;
-
-		newStar.size = GetRandomValue(1, 4) / 2;
-
-		Stars.push_back(newStar);
-
-	}
-}
-
-void Background::Update(float offset)
-{
-	for (int i = 0; i < Stars.size(); i++)
-	{
-		Stars[i].Update(offset);
-	}
-	
-}
-
-void Background::Render()
-{
-	for (int i = 0; i < Stars.size(); i++)
-	{
-		Stars[i].Render();
-	}
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*LEGACY CODE
-	// our objective is to calculate the distance between the closest point of the line to the centre of the circle,
-	// and determine if it is shorter than the radius.
-
-	// we can imagine the edges of the line and circle centre to form a triangle. calculating the height of the
-	// triangle will give us the distance, if the line serves as the base
-
-	// simplify variables
-	Vector2 A = lineStart;
-	Vector2 B = lineEnd;
-	Vector2 C = circlePos;
-
-	// calculate area using determinant method
-
-	float triangle_area = fabsf(A.x * (B.y - C.y) + B.x * (C.y - A.y) + C.x * (A.y - B.y)) / 2;
-
-
-	// Caculate vectors AB to calculate base length
-	Vector2 AB;
-	AB.x = B.x - A.x;
-	AB.y = B.y - A.y;
-
-	//get the base length
-	float trangle_base_length = (float)sqrt(pow(AB.x, 2) + pow(AB.y, 2));
-
-	// we double the area to turn in into a rectangle, and then divide the base length to get the height.
-	float triangle_height = (triangle_area * 2 ) / trangle_base_length;
-
-	std::cout << triangle_area << "\n";
-
-	if (triangle_height < circleRadius)
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
-
-
-	*/
-

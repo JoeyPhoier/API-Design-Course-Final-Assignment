@@ -10,6 +10,7 @@ void Resources::Load()
 	shipTextures.push_back(LoadTexture("./Assets/Ship2.png"));
 	shipTextures.push_back(LoadTexture("./Assets/Ship3.png"));
 	laserTexture = LoadTexture("./Assets/Laser.png");
+	backgroundTexture = LoadTexture("./Assets/Space Background.png");
 }
 /*
 void Resources::Unload()

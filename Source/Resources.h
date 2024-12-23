@@ -12,5 +12,6 @@ struct Resources
 	Texture2D alienTexture;
 	Texture2D barrierTexture;
 	Texture2D laserTexture;
+	Texture2D backgroundTexture;
 
 };

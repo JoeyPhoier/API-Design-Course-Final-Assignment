@@ -115,31 +115,6 @@ public:
 	void Render(Texture2D texture); 
 };
 
-
-//TODO: What is this?
-struct Star
-{
-	Vector2 initPosition = { 0, 0 };
-	Vector2 position = { 0, 0 };
-	Color color = GRAY;
-	float size = 0;
-	void Update(float starOffset);
-	void Render();
-};
-
-struct Background
-{
-	
-
-	//TODO: Jesus christ. This should just be a png brother.
-	std::vector<Star> Stars;
-
-	void Initialize(int starAmount);
-	void Update(float offset);
-	void Render();
-
-};
-
 struct Game
 {
 	// Gamestate
@@ -204,18 +179,13 @@ struct Game
 	std::vector<Alien> Aliens;
 
 	std::vector<PlayerData> Leaderboard = { {"Player 1", 500}, {"Player 2", 400}, {"Player 3", 300}, {"Player 4", 200}, {"Player 5", 100} };
-	
-	Background background;
-
-
 
 	//TODO: All of these should probably be stored in their respective classes
 	Vector2 playerPos;
 	Vector2 alienPos; 
 	Vector2 cornerPos;
+	Vector2 backgroundPos;
 	float offset;
-
-
 
 	//TODO: Theres probably a better way to do this
 	//TEXTBOX ENTER
