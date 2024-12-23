@@ -39,6 +39,9 @@
     <ClCompile Include="Source\Entities\PlayerShip.cpp">
       <Filter>Source Files\Entities</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Entities\Barrier.cpp">
+      <Filter>Source Files\Entities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\game.h">
@@ -57,6 +60,9 @@
       <Filter>Header Files\Entities</Filter>
     </ClInclude>
     <ClInclude Include="Source\Entities\PlayerShip.h">
+      <Filter>Header Files\Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Entities\Barrier.h">
       <Filter>Header Files\Entities</Filter>
     </ClInclude>
   </ItemGroup>

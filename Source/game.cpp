@@ -37,7 +37,7 @@ void Game::Start()
 	float wall_distance = window_width / (wallCount + 1); 
 	for (int i = 0; i < wallCount; i++)
 	{
-		Wall newWalls;
+		Barrier newWalls;
 		newWalls.position.y = window_height - 250; 
 		newWalls.position.x = wall_distance * (i + 1); 
 
@@ -578,7 +578,7 @@ void Game::SaveLeaderboard()
 bool Game::CheckCollision(Vector2 circlePos, float circleRadius, Vector2 lineStart, Vector2 lineEnd)
 {
 	//TODO: This whole function should probably be rewritten. For our purposes, we only need to do compare two circles
-	
+
 	// our objective is to calculate the distance between the closest point on the line to the centre of the circle, 
 	// and determine if it is shorter than the radius.
 
@@ -595,7 +595,7 @@ bool Game::CheckCollision(Vector2 circlePos, float circleRadius, Vector2 lineSta
 
 	// calculate the length of the line
 	float length = lineLength(A, B);
-	
+
 	// calculate the dot product
 	float dotP = (((C.x - A.x) * (B.x - A.x)) + ((C.y - A.y) * (B.y - A.y))) / pow(length, 2);
 
@@ -639,25 +639,6 @@ bool Game::CheckCollision(Vector2 circlePos, float circleRadius, Vector2 lineSta
 		// Point is not on the line, line is not colliding
 		return false;
 	}
-
-}
-
-void Wall::Render(Texture2D texture)
-{
-	DrawTextureQuick(texture, position, .3f);
-	DrawText(TextFormat("%i", health), position.x-21, position.y+10, 40, RED);
-}
-
-void Wall::Update() 
-{
-
-	// set walls as inactive when out of health
-	if (health < 1)
-	{
-		active = false;
-	}
-
-
 }
 
 void Alien::Update() 

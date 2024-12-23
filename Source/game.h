@@ -5,6 +5,7 @@
 #include "Resources.h"
 #include "Projectile.h"
 #include "PlayerShip.h"
+#include "Barrier.h"
 
 //TODO: Convert all enums to enum classes.
 enum struct State
@@ -28,26 +29,6 @@ struct PlayerData
 {
 	std::string name;
 	int score;
-};
-
-//TODO: Change name. Should be barrier or something.
-struct Wall
-{
-public: 
-	//TODO: Does not need both a position and a rectangle. 
-	Vector2 position;
-	Rectangle rec; 
-	//TODO: Do all entities need an active flag? Consider getting rid of them.
-	bool active;
-	//TODO: Do all walls need a color member? If so, should probably be static.
-	Color color;
-	//TODO: I would like to see the max health be a static and constexpr value.
-	int health = 50;
-	int radius = 60;
-
-
-	void Render(Texture2D texture); 
-	void Update(); 
 };
 
 struct Alien
@@ -132,7 +113,7 @@ struct Game
 
 	std::vector<Projectile> Projectiles;
 
-	std::vector<Wall> Walls;
+	std::vector<Barrier> Walls;
 
 	std::vector<Alien> Aliens;
 
