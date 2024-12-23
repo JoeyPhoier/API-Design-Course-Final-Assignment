@@ -4,7 +4,7 @@
 #include <chrono>
 #include <thread>
 #include <fstream>
-
+#include "RayUtils.h"
 
 // MATH FUNCTIONS
 float lineLength(Vector2 A, Vector2 B) //Uses pythagoras to calculate the length of a line
@@ -359,36 +359,13 @@ void Game::Render()
 	switch (gameState)
 	{
 	case State::STARTSCREEN:
-		//Code
 		//TODO: Create a shorthand for this
 		DrawText("SPACE INVADERS", 200, 100, 160, YELLOW);
-
 		DrawText("PRESS SPACE TO BEGIN", 200, 350, 40, YELLOW);
-
-
 		break;
 	case State::GAMEPLAY:
-		//Code
+		DrawTextureQuick(resources.backgroundTexture, backgroundPos, 1.1f);
 
-
-		//background render LEAVE THIS AT TOP
-		DrawTexturePro(resources.backgroundTexture,
-					   {
-						   0,
-						   0,
-						   static_cast<float>(resources.backgroundTexture.width),
-						   static_cast<float>(resources.backgroundTexture.height),
-					   },
-		{
-			backgroundPos.x,
-			backgroundPos.y,
-			static_cast<float>(resources.backgroundTexture.width * 1.1f),
-			static_cast<float>(resources.backgroundTexture.height * 1.1f),
-		}, { 0 , 0 },
-		0,
-		WHITE);
-
-		//DrawText("GAMEPLAY", 50, 30, 40, YELLOW);
 		//TODO: Use std::format
 		DrawText(TextFormat("Score: %i", score), 50, 20, 40, YELLOW);
 		DrawText(TextFormat("Lives: %i", player.lives), 50, 70, 40, YELLOW);
@@ -730,24 +707,8 @@ void Player::Render(Texture2D texture)
 {
 	float window_height = GetScreenHeight(); 
 
-	//TODO: Make a cleaner shorthand for this. 
-	DrawTexturePro(texture,
-		{
-			0,
-			0,
-			352,
-			352,
-		},
-		{
-			x_pos, window_height - player_base_height,
-			100,
-			100,
-		}, { 50, 50 },
-		0,
-		WHITE);
+	DrawTextureQuick(texture, { x_pos, window_height - player_base_height }, .3f);
 }
-
-
 
 void Projectile::Update()
 {
@@ -769,44 +730,13 @@ void Projectile::Update()
 void Projectile::Render(Texture2D texture)
 {
 	//DrawCircle((int)position.x, (int)position.y, 10, RED);
-	DrawTexturePro(texture,
-		{
-			0,
-			0,
-			176,
-			176,
-		},
-		{
-			position.x,
-			position.y,
-			50,
-			50,
-		}, { 25 , 25 },
-		0,
-		WHITE);
+	DrawTextureQuick(texture, position, .3f);
 }
 
 void Wall::Render(Texture2D texture)
 {
-	DrawTexturePro(texture,
-		{
-			0,
-			0,
-			704,
-			704,
-		},
-		{
-			position.x,
-			position.y,
-			200,
-			200,
-		}, { 100 , 100 },
-		0,
-		WHITE);
-
-
+	DrawTextureQuick(texture, position, .3f);
 	DrawText(TextFormat("%i", health), position.x-21, position.y+10, 40, RED);
-	
 }
 
 void Wall::Update() 
@@ -850,24 +780,5 @@ void Alien::Update()
 
 void Alien::Render(Texture2D texture) 
 {
-	//DrawRectangle((int)position.x - 25, (int)position.y, 30, 30, RED);
-	//DrawCircle((int)position.x, (int)position.y, radius, GREEN);
-	
-	
-
-	DrawTexturePro(texture,
-		{
-			0,
-			0,
-			352,
-			352,
-		},
-		{
-			position.x,
-			position.y,
-			100,
-			100,
-		}, {50 , 50},
-		0,
-		WHITE);
+	DrawTextureQuick(texture, position, .3f);
 }

@@ -171,6 +171,7 @@
   <ItemGroup>
     <ClInclude Include="level.h" />
     <ClInclude Include="Source\game.h" />
+    <ClInclude Include="Source\RayUtils.h" />
     <ClInclude Include="Source\Resources.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
