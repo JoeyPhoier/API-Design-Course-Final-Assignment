@@ -4,6 +4,7 @@
 #include <string>
 #include "Resources.h"
 #include "Projectile.h"
+#include "PlayerShip.h"
 
 //TODO: Convert all enums to enum classes.
 enum struct State
@@ -27,28 +28,6 @@ struct PlayerData
 {
 	std::string name;
 	int score;
-};
-
-//TODO: Should be moved to a Player specific header.
-struct Player
-{
-public:
-
-	float x_pos = 0;
-	float speed = 7;
-	float player_base_height = 70.0f;  
-	float radius = 50;
-	int lives = 3;
-	int direction = 0;
-	int activeTexture = 0;
-	float timer = 0;
-
-	EntityType type = EntityType::PLAYER;
-
-	void Initialize();
-	void Render(Texture2D texture);
-	void Update();
-	
 };
 
 //TODO: Change name. Should be barrier or something.
@@ -149,7 +128,7 @@ struct Game
 	// Entity Storage and Resources
 	Resources resources;
 
-	Player player;
+	PlayerShip player;
 
 	std::vector<Projectile> Projectiles;
 
