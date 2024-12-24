@@ -5,6 +5,7 @@
 #include <thread>
 #include <fstream>
 #include "RayUtils.h"
+#include "Collision.h"
 
 // MATH FUNCTIONS
 float lineLength(Vector2 A, Vector2 B) //Uses pythagoras to calculate the length of a line
@@ -47,7 +48,6 @@ void Game::Start()
 	//creating player
 	PlayerShip newPlayer;
 	player = newPlayer;
-	player.Initialize();
 
 	playerTextures.emplace_back("./Assets/Ship1.png");
 	playerTextures.emplace_back("./Assets/Ship2.png");
@@ -112,7 +112,7 @@ void Game::Update()
 		{
 			Aliens[i].Update(); 
 
-			if (Aliens[i].position.y > GetScreenHeight() - player.player_base_height)
+			if (Aliens[i].position.y > GetScreenHeight() - player.radius)
 			{
 				End();
 			}
@@ -120,7 +120,7 @@ void Game::Update()
 
 		//TODO: This should probably be processed when the player takes damage, not every frame.
 		//End game if player dies
-		if (player.lives < 1)
+		if (player.currHealth <= 0)
 		{
 			End();
 		}
@@ -133,18 +133,13 @@ void Game::Update()
 		}
 
 		//Update Background Parallax
-		backgroundPos.x = (GetScreenWidth() * .5f) - (player.x_pos / 15);
+		backgroundPos.x = (GetScreenWidth() * .5f) - (player.position.x / 15);
 
 		//TODO: Replace these with for loops or algos
 		//UPDATE PROJECTILE
 		for (int i = 0; i < Projectiles.size(); i++)
 		{
 			Projectiles[i].Update();
-		}
-		//UPDATE PROJECTILE
-		for (int i = 0; i < Barriers.size(); i++)
-		{
-			Barriers[i].Update();
 		}
 
 		//TODO: Collision checks should be handled in a separate function, or by member methods.
@@ -155,13 +150,13 @@ void Game::Update()
 			{
 				for (int a = 0; a < Aliens.size(); a++)
 				{
-					if (CheckCollision(Aliens[a].position, Aliens[a].radius, Projectiles[i].lineStart, Projectiles[i].lineEnd))
+					if(MyCheckCollision_AABBCircle(Projectiles[i].position, Projectiles[i].size, Aliens[a].position, Aliens[a].radius))
 					{
 						// Kill!
 						std::cout << "Hit! \n";
 						// Set them as inactive, will be killed later
-						Projectiles[i].active = false;
-						Aliens[a].active = false;
+						Projectiles[i].Destroy();
+						Aliens[a].Kill();
 						score += 100;
 					}
 				}
@@ -172,24 +167,24 @@ void Game::Update()
 			{
 				if (!Projectiles[i].playerProjectile)
 				{
-					if (CheckCollision({player.x_pos, GetScreenHeight() - player.player_base_height }, player.radius, Projectiles[i].lineStart, Projectiles[i].lineEnd))
+					if (MyCheckCollision_AABBCircle(Projectiles[i].position, Projectiles[i].size, player.position, player.radius))
 					{
 						std::cout << "dead!\n"; 
-						Projectiles[i].active = false; 
-						player.lives -= 1; 
+						Projectiles[i].Destroy();
+						player.Damage();
 					}
 				}
 			}
 
 			for (int b = 0; b < Barriers.size(); b++)
 			{
-				if (CheckCollision(Barriers[b].position, Barriers[b].radius, Projectiles[i].lineStart, Projectiles[i].lineEnd))
+				if (MyCheckCollision_AABBCircle(Projectiles[i].position, Projectiles[i].size, Barriers[b].position, Barriers[b].radius))
 				{
 					// Kill!
 					std::cout << "Hit! \n";
 					// Set them as inactive, will be killed later
-					Projectiles[i].active = false;
-					Barriers[b].health -= 1;
+					Projectiles[i].Destroy();
+					Barriers[b].Damage();
 				}
 			}
 		}
@@ -198,12 +193,8 @@ void Game::Update()
 		//MAKE PROJECTILE
 		if (IsKeyPressed(KEY_SPACE))
 		{
-			float window_height = (float)GetScreenHeight();
-			Projectile newProjectile;
-			newProjectile.position.x = player.x_pos;
-			newProjectile.position.y = window_height - 130;
-			newProjectile.playerProjectile = true;
-			Projectiles.push_back(newProjectile);
+			//newProjectile.position.y = window_height - 130;
+			Projectiles.push_back(Projectile(player.position, true));
 		}
 
 		//TODO: Should probably be handled by the alien update.
@@ -221,7 +212,6 @@ void Game::Update()
 			Projectile newProjectile;
 			newProjectile.position = Aliens[randomAlienIndex].position;
 			newProjectile.position.y += 40;
-			newProjectile.speed = -15;
 			newProjectile.playerProjectile = false;
 			Projectiles.push_back(newProjectile);
 			shootTimer = 0;
@@ -231,7 +221,7 @@ void Game::Update()
 		// REMOVE INACTIVE/DEAD ENITITIES
 		for (int i = 0; i < Projectiles.size(); i++)
 		{
-			if (Projectiles[i].active == false)
+			if (!Projectiles[i].IsAlive())
 			{
 				Projectiles.erase(Projectiles.begin() + i);
 				// Prevent the loop from skipping an instance because of index changes, since all insances after
@@ -241,7 +231,7 @@ void Game::Update()
 		}
 		for (int i = 0; i < Aliens.size(); i++)
 		{
-			if (Aliens[i].active == false)
+			if (!Aliens[i].IsAlive())
 			{
 				//TODO: Use a friend member predicate for this
 
@@ -251,7 +241,7 @@ void Game::Update()
 		}
 		for (int i = 0; i < Barriers.size(); i++)
 		{
-			if (Barriers[i].active == false)
+			if (!Barriers[i].IsAlive())
 			{
 				Barriers.erase(Barriers.begin() + i);
 				i--;
@@ -356,7 +346,7 @@ void Game::Render()
 
 		//TODO: Use std::format
 		DrawText(TextFormat("Score: %i", score), 50, 20, 40, YELLOW);
-		DrawText(TextFormat("Lives: %i", player.lives), 50, 70, 40, YELLOW);
+		DrawText(TextFormat("Lives: %i", player.currHealth), 50, 70, 40, YELLOW);
 
 		//player rendering 
 		//TODO: Player Render shouldnt require anything
@@ -470,7 +460,6 @@ void Game::SpawnAliens()
 		for (int col = 0; col < formationWidth; col++) {
 			Alien newAlien = Alien();
 			//TODO: Why is the alien getting instantated with wrongful data? These should be in the constructor.
-			newAlien.active = true;
 			newAlien.position.x = formationX + 450 + (col * alienSpacing);
 			newAlien.position.y = formationY + (row * alienSpacing);
 			//TODO: Replace with Emplace back

@@ -1,7 +1,6 @@
 #pragma once
 #include "raylib.h"
 #include "MyTexture2D.h"
-#include "RayUtils.h"
 
 class Barrier final
 {
