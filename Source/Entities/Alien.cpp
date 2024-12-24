@@ -28,7 +28,7 @@ void Alien::Update()
 	}
 }
 
-void Alien::Render(Texture2D texture)
+void Alien::Render(const Texture2D& texture) const noexcept
 {
 	DrawTextureQuick(texture, position, .3f);
 }

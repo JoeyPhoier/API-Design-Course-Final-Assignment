@@ -43,31 +43,28 @@ struct MyRectangle
 
 //Raylib has a couple of these operations builtin, such as Vector2Subtract, but these take the vectors in by value.
 //Taking them in by reference is lighter, so I opted to make my own.
-Vector2 operator-(const Vector2& first, const Vector2& second) noexcept
+inline Vector2 operator-(const Vector2& first, const Vector2& second) noexcept
 {
 	return {
 		first.x - second.x,
 		first.y - second.y
 	};
 };
-
-Vector2 operator+(const Vector2& first, const Vector2& second) noexcept
+inline Vector2 operator+(const Vector2& first, const Vector2& second) noexcept
 {
 	return {
 		first.x + second.x,
 		first.y + second.y
 	};
 };
-
-Vector2 operator*(const Vector2& first, const Vector2& second) noexcept
+inline Vector2 operator*(const Vector2& first, const Vector2& second) noexcept
 {
 	return {
 	first.x * second.x,
 	first.y * second.y
 	};
 };
-
-Vector2 operator*(const Vector2& first, float second) noexcept
+inline Vector2 operator*(const Vector2& first, float second) noexcept
 {
 	return {
 	first.x * second,

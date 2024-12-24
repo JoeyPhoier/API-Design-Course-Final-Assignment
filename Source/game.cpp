@@ -41,13 +41,17 @@ void Game::Start()
 		newWalls.position.y = window_height - 250; 
 		newWalls.position.x = wall_distance * (i + 1); 
 
-		Walls.push_back(newWalls); 
+		Barriers.push_back(newWalls); 
 	}
 
 	//creating player
 	PlayerShip newPlayer;
 	player = newPlayer;
 	player.Initialize();
+
+	playerTextures.emplace_back("./Assets/Ship1.png");
+	playerTextures.emplace_back("./Assets/Ship2.png");
+	playerTextures.emplace_back("./Assets/Ship3.png");
 
 	//creating aliens
 	SpawnAliens();
@@ -64,7 +68,7 @@ void Game::End()
 {
 	//SAVE SCORE AND UPDATE SCOREBOARD
 	Projectiles.clear();
-	Walls.clear();
+	Barriers.clear();
 	Aliens.clear();
 	newHighScore = CheckNewHighScore();
 	gameState = State::ENDSCREEN;
@@ -74,14 +78,6 @@ void Game::Continue()
 {
 	SaveLeaderboard();
 	gameState = State::STARTSCREEN;
-}
-
-void Game::Launch()
-{
-	//TODO: Get rid of this two step init.
-
-	//LOAD SOME RESOURCES HERE
-	resources.Load();
 }
 
 void Game::Update()
@@ -136,12 +132,8 @@ void Game::Update()
 			SpawnAliens();
 		}
 
-		//TODO: What is the point of this
-		// Update background with offset
-		playerPos = { player.x_pos, (float)player.player_base_height };
-		cornerPos = { 0, (float)player.player_base_height };
-		offset = lineLength(playerPos, cornerPos) * -1;
-		backgroundPos.x = (GetScreenWidth() * .5f) - player.x_pos / 15;
+		//Update Background Parallax
+		backgroundPos.x = (GetScreenWidth() * .5f) - (player.x_pos / 15);
 
 		//TODO: Replace these with for loops or algos
 		//UPDATE PROJECTILE
@@ -150,9 +142,9 @@ void Game::Update()
 			Projectiles[i].Update();
 		}
 		//UPDATE PROJECTILE
-		for (int i = 0; i < Walls.size(); i++)
+		for (int i = 0; i < Barriers.size(); i++)
 		{
-			Walls[i].Update();
+			Barriers[i].Update();
 		}
 
 		//TODO: Collision checks should be handled in a separate function, or by member methods.
@@ -189,16 +181,15 @@ void Game::Update()
 				}
 			}
 
-
-			for (int b = 0; b < Walls.size(); b++)
+			for (int b = 0; b < Barriers.size(); b++)
 			{
-				if (CheckCollision(Walls[b].position, Walls[b].radius, Projectiles[i].lineStart, Projectiles[i].lineEnd))
+				if (CheckCollision(Barriers[b].position, Barriers[b].radius, Projectiles[i].lineStart, Projectiles[i].lineEnd))
 				{
 					// Kill!
 					std::cout << "Hit! \n";
 					// Set them as inactive, will be killed later
 					Projectiles[i].active = false;
-					Walls[b].health -= 1;
+					Barriers[b].health -= 1;
 				}
 			}
 		}
@@ -258,11 +249,11 @@ void Game::Update()
 				i--;
 			}
 		}
-		for (int i = 0; i < Walls.size(); i++)
+		for (int i = 0; i < Barriers.size(); i++)
 		{
-			if (Walls[i].active == false)
+			if (Barriers[i].active == false)
 			{
-				Walls.erase(Walls.begin() + i);
+				Barriers.erase(Barriers.begin() + i);
 				i--;
 			}
 		}
@@ -361,7 +352,7 @@ void Game::Render()
 		DrawText("PRESS SPACE TO BEGIN", 200, 350, 40, YELLOW);
 		break;
 	case State::GAMEPLAY:
-		DrawTextureQuick(resources.backgroundTexture, backgroundPos, 1.1f);
+		DrawTextureQuick(backgroundTexture.get(), backgroundPos, 1.1f);
 
 		//TODO: Use std::format
 		DrawText(TextFormat("Score: %i", score), 50, 20, 40, YELLOW);
@@ -369,42 +360,31 @@ void Game::Render()
 
 		//player rendering 
 		//TODO: Player Render shouldnt require anything
-		player.Render(resources.shipTextures[player.activeTexture]);
+		player.Render(playerTextures[player.activeTexture]);
 
 		//TODO: All of these should be in range loops or algos
 		//projectile rendering
 		for (int i = 0; i < Projectiles.size(); i++)
 		{
-			Projectiles[i].Render(resources.laserTexture);
+			Projectiles[i].Render(ProjectileTexture);
 		}
 
 		// wall rendering 
-		for (int i = 0; i < Walls.size(); i++)
+		for (int i = 0; i < Barriers.size(); i++)
 		{
-			Walls[i].Render(resources.barrierTexture); 
+			Barriers[i].Render(BarrierTexture); 
 		}
 
 		//alien rendering  
 		for (int i = 0; i < Aliens.size(); i++)
 		{
-			Aliens[i].Render(resources.alienTexture);
+			Aliens[i].Render(AlienTexture);
 		}
-
-
-
-
-
 
 		break;
 	case State::ENDSCREEN:
 		//Code
 		//DrawText("END", 50, 50, 40, YELLOW);
-
-
-		
-
-		
-
 
 		if (newHighScore)
 		{

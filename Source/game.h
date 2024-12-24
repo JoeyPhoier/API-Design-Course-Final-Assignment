@@ -2,7 +2,7 @@
 #include "raylib.h"
 #include <vector>
 #include <string>
-#include "Resources.h"
+#include "MyTexture2D.h"
 #include "Projectile.h"
 #include "PlayerShip.h"
 #include "Barrier.h"
@@ -73,18 +73,18 @@ struct Game
 	void LoadLeaderboard();
 	void SaveLeaderboard();
 
-
-	//TODO: Textures should go into their own managers
-	// Entity Storage and Resources
-	Resources resources;
-
+	//Entities
 	PlayerShip player;
-
-	std::vector<Projectile> Projectiles;
-
-	std::vector<Barrier> Walls;
-
 	std::vector<Alien> Aliens;
+	std::vector<Projectile> Projectiles;
+	std::vector<Barrier> Barriers;
+
+	//Textures
+	std::vector<MyTexture2D> playerTextures;
+	MyTexture2D AlienTexture = MyTexture2D("./Assets/Alien.png");
+	MyTexture2D ProjectileTexture = MyTexture2D("./Assets/Laser.png");
+	MyTexture2D BarrierTexture = MyTexture2D("./Assets/Barrier.png");
+	MyTexture2D backgroundTexture = MyTexture2D("./Assets/Space Background.png");
 
 	std::vector<PlayerData> Leaderboard = { {"Player 1", 500}, {"Player 2", 400}, {"Player 3", 300}, {"Player 4", 200}, {"Player 5", 100} };
 
@@ -105,5 +105,4 @@ struct Game
 
 	//TODO: What is this being used for? Doesnt seem necessary.
 	int framesCounter = 0;
-
 };

@@ -43,10 +43,6 @@ int main(void)
     //TODO: Game should always start in the startscreen, no sense in requiring it for the constructor.
     Game game = { State::STARTSCREEN };
     //TODO: These should not have to be instantiated individually
-    Resources resources;
-    game.resources = resources;
-    game.Launch();
-
     
     //--------------------------------------------------------------------------------------
 

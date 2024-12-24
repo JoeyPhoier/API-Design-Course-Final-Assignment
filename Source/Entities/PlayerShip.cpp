@@ -54,7 +54,7 @@ void PlayerShip::Update()
 	}
 }
 
-void PlayerShip::Render(Texture2D texture)
+void PlayerShip::Render(const Texture2D& texture)
 {
-	DrawTextureQuick(texture, { x_pos, GetScreenHeight() - player_base_height }, .3f);
+	DrawTextureQuick(texture, {x_pos, GetScreenHeight() - player_base_height}, .3f);
 }

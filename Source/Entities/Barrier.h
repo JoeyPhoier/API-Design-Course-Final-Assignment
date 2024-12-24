@@ -1,5 +1,6 @@
 #pragma once
 #include "raylib.h"
+#include "MyTexture2D.h"
 
 class Barrier
 {
@@ -15,6 +16,6 @@ public:
 	int health = 50;
 	int radius = 60;
 
-	void Render(Texture2D texture);
+	void Render(const Texture2D& texture);
 	void Update();
 };

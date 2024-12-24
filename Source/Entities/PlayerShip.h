@@ -1,9 +1,12 @@
 #pragma once
 #include "raylib.h"
+#include "MyTexture2D.h"
+#include <vector>
 
 struct PlayerShip
 {
 public:
+
 	float x_pos = 0;
 	float speed = 7;
 	float player_base_height = 70.0f;
@@ -14,6 +17,6 @@ public:
 	float timer = 0;
 
 	void Initialize();
-	void Render(Texture2D texture);
+	void Render(const Texture2D& texture);
 	void Update();
 };

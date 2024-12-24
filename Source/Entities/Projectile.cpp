@@ -1,6 +1,11 @@
 #include "Projectile.h"
 #include "RayUtils.h"
 
+Projectile::Projectile(Vector2 newPosition, bool wasFiredByPlayer) : position(newPosition), playerProjectile(wasFiredByPlayer)
+{
+
+}
+
 void Projectile::Update()
 {
 	position.y -= speed;
