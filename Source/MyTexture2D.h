@@ -36,12 +36,10 @@ public:
 		std::swap(texture, other.texture);
 	}
 
-
 	[[nodiscard]] const Texture2D& get() const noexcept
 	{
 		return texture;
 	}
-
 	operator Texture2D() const noexcept
 	{
 		return texture;

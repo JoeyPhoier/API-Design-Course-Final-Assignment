@@ -6,7 +6,7 @@
 class PlayerShip final
 {
 private: 
-	bool isAlive;
+	bool isAlive = true;
 	static constexpr int maxHealth = 3;
 
 	static constexpr float speed = 7;

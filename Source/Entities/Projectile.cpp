@@ -1,28 +1,20 @@
 #include "Projectile.h"
 #include "RayUtils.h"
 
-Projectile::Projectile(Vector2 newPosition, bool wasFiredByPlayer) : position(newPosition), playerProjectile(wasFiredByPlayer)
-{
-
-}
+Projectile::Projectile(Vector2 spawnPoint, bool wasFiredByPlayer) : position(spawnPoint), playerProjectile(wasFiredByPlayer) noexcept {}
 
 void Projectile::Update()
 {
 	position.y -= speed;
 
-	lineStart.y = position.y - 15;
-	lineEnd.y = position.y + 15;
-
-	lineStart.x = position.x;
-	lineEnd.x = position.x;
-
-	if (position.y < 0 || position.y > 1500)
+	const auto BottomEdge = static_cast<float>(GetScreenHeight());
+	if (bool isOutOfBounds = position.y < 0 || position.y > BottomEdge)
 	{
-		active = false;
+		Destroy();
 	}
 }
 
-void Projectile::Render(const Texture2D& texture)
+void Projectile::Render(const Texture2D& texture) const noexcept
 {
 	DrawTextureQuick(texture, position, .3f);
 }

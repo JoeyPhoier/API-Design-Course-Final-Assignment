@@ -7,7 +7,7 @@ class Barrier final
 {
 private:
 	//TODO: Do all entities need an active flag? Consider getting rid of them.
-	bool isAlive;
+	bool isAlive = true;
 	static constexpr int maxHealth = 50;
 
 	static constexpr float renderScale = .3f;

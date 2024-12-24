@@ -2,25 +2,28 @@
 #include "raylib.h"
 #include "MyTexture2D.h"
 
-class Projectile
+class Projectile final
 {
+private:
+	bool isAlive = true;
+	static constexpr int speed = 15;
 public:
-	// INITIALIZE PROJECTILE WHILE DEFINING IF ITS PLAYER OR ENEMY 
 	Vector2 position = { 0,0 };
-	int speed = 15;
-	bool active = true;
 	bool playerProjectile = true;
 
-	//TODO: This is probably uncessary. Just get starting pos, and add velocity upwards
-	// Consider making projectiles AABBs, instead of lines
-	// LINE WILL UPDATE WITH POSITION FOR CALCULATIONS
-	Vector2 lineStart = { 0, 0 };
-	Vector2 lineEnd = { 0, 0 };
-
 	Projectile() = default;
-	Projectile(Vector2 newPosition, bool wasFiredByPlayer);
+	Projectile(Vector2 spawnPoint, bool wasFiredByPlayer) noexcept;
+
+	[[nodiscard]] bool IsAlive() const noexcept
+	{
+		return isAlive;
+	}
+	void Destroy() noexcept
+	{
+		isAlive = false;
+	}
 
 	void Update();
-	void Render(const Texture2D& texture);
+	void Render(const Texture2D& texture) const noexcept;
 };
 
