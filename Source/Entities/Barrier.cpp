@@ -1,17 +1,12 @@
 #include "Barrier.h"
 #include "RayUtils.h"
+#include <format>
 
-void Barrier::Render(const Texture2D& texture)
+void Barrier::Render(const Texture2D& texture)  const noexcept
 {
-	DrawTextureQuick(texture, position, .3f);
-	DrawText(TextFormat("%i", health), position.x - 21, position.y + 10, 40, RED);
-}
-
-void Barrier::Update()
-{
-	// set walls as inactive when out of health
-	if (health < 1)
-	{
-		active = false;
-	}
+	DrawTextureQuick(texture, position, renderScale);
+	DrawText(std::format("{}", currHealth).c_str(),
+			 static_cast<int>(position.x),
+			 static_cast<int>(position.y),
+			 textSize, RED);
 }

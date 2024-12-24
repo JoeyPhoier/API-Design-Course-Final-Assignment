@@ -1,21 +1,35 @@
 #pragma once
 #include "raylib.h"
 #include "MyTexture2D.h"
+#include "RayUtils.h"
 
 class Barrier
 {
-public:
-	//TODO: Does not need both a position and a rectangle. 
-	Vector2 position;
-	Rectangle rec;
+private:
 	//TODO: Do all entities need an active flag? Consider getting rid of them.
-	bool active;
-	//TODO: Do all walls need a color member? If so, should probably be static.
-	Color color;
-	//TODO: I would like to see the max health be a static and constexpr value.
-	int health = 50;
-	int radius = 60;
+	bool isAlive;
+	static constexpr int maxHealth = 50;
 
-	void Render(const Texture2D& texture);
-	void Update();
+	static constexpr float renderScale = .3f;
+	static constexpr int textSize = 40;
+	static constexpr Vector2 textOffset = { -21, 10 };
+public:
+	Vector2 position;
+	int radius = 60;
+	int currHealth = maxHealth;
+
+	[[nodiscard]] bool IsAlive() const noexcept
+	{
+		return isAlive;
+	}
+	void Damage() noexcept
+	{
+		--currHealth;
+		if (currHealth <= 0)
+		{
+			isAlive = false;
+		}
+	}
+
+	void Render(const Texture2D& texture) const noexcept;
 };

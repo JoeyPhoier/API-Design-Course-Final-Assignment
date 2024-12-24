@@ -15,13 +15,15 @@ public:
 	static constexpr float radius = 30;
 	static bool shouldMoveDownThisFrame;
 
-	bool IsAlive() const noexcept
+	[[nodiscard]] bool IsAlive() const noexcept
 	{
 		return isAlive;
+	}
+	void Kill() noexcept
+	{
+		isAlive = false;
 	}
 
 	void Update() noexcept;
 	void Render(const Texture2D& texture) const noexcept;
-
-	void Kill() noexcept;
 };

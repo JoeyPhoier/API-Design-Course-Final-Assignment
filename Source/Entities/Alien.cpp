@@ -23,8 +23,3 @@ void Alien::Render(const Texture2D& texture) const noexcept
 {
 	DrawTextureQuick(texture, position, renderScale);
 }
-
-void Alien::Kill() noexcept
-{
-	isAlive = false;
-}
