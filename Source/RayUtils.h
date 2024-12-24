@@ -57,6 +57,12 @@ inline Vector2 operator+(const Vector2& first, const Vector2& second) noexcept
 		first.y + second.y
 	};
 };
+inline Vector2 operator+=(Vector2& first, const Vector2& second) noexcept
+{
+	first.x += second.x;
+	first.y += second.y;
+	return first;
+};
 inline Vector2 operator*(const Vector2& first, const Vector2& second) noexcept
 {
 	return {

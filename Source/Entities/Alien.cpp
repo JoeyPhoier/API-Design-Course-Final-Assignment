@@ -1,34 +1,30 @@
 #include "Alien.h"
 #include "RayUtils.h"
 
-void Alien::Update()
+float Alien::speed = 2;
+bool Alien::shouldMoveDownThisFrame = false;
+
+void Alien::Update() noexcept
 {
-	int window_width = GetScreenWidth();
+	position.x += speed;
 
-	//TODO: This can formated in a cleaner way
-	if (moveRight)
+	if	(!shouldMoveDownThisFrame)
 	{
-		position.x += speed;
-
-		if (position.x >= GetScreenWidth())
+		const auto screenWidth = static_cast<float>(GetScreenWidth());
+		if (position.x >= screenWidth || position.x <= 0)
 		{
-			moveRight = false;
-			position.y += 50;
-		}
-	}
-	else
-	{
-		position.x -= speed;
-
-		if (position.x <= 0)
-		{
-			moveRight = true;
-			position.y += 50;
+			shouldMoveDownThisFrame = true;
+			speed *= -1;
 		}
 	}
 }
 
 void Alien::Render(const Texture2D& texture) const noexcept
 {
-	DrawTextureQuick(texture, position, .3f);
+	DrawTextureQuick(texture, position, renderScale);
+}
+
+void Alien::Kill() noexcept
+{
+	isAlive = false;
 }

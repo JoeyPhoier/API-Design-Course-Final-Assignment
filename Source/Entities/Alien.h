@@ -2,23 +2,26 @@
 #include "raylib.h"
 #include "MyTexture2D.h"
 
-struct Alien
+class Alien final
 {
+private:
+	bool isAlive = true;
+	static float speed;
+
+	static constexpr float renderScale = .3f;
 public:
-	//TODO: Is this necessary? If all textures are rendered with base color, get rid of this.
-	Color color = WHITE;
 	Vector2 position = { 0, 0 };
-	//TODO: Why do they need a position and an x and y?
-	int x = 0;
-	int y = 0;
-	//TODO: Should be constexpr and static
-	float radius = 30;
-	bool active = true;
-	bool moveRight = true;
 
+	static constexpr float radius = 30;
+	static bool shouldMoveDownThisFrame;
 
-	int speed = 2;
+	bool IsAlive() const noexcept
+	{
+		return isAlive;
+	}
 
-	void Update();
+	void Update() noexcept;
 	void Render(const Texture2D& texture) const noexcept;
+
+	void Kill() noexcept;
 };
