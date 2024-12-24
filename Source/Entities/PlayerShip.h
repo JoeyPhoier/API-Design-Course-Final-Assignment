@@ -3,20 +3,35 @@
 #include "MyTexture2D.h"
 #include <vector>
 
-struct PlayerShip
+class PlayerShip final
 {
-public:
+private: 
+	bool isAlive;
+	static constexpr int maxHealth = 3;
 
-	float x_pos = 0;
-	float speed = 7;
-	float player_base_height = 70.0f;
+	static constexpr float speed = 7;
+	static constexpr float renderScale = .3f;
+public:
+	Vector2 position = { 0,0 };
 	float radius = 50;
-	int lives = 3;
-	int direction = 0;
+
+	int currHealth = maxHealth;
+
+	//TODO: Use a proper spritesheet and handle this privately
 	int activeTexture = 0;
 	float timer = 0;
 
-	void Initialize();
-	void Render(const Texture2D& texture);
+	PlayerShip();
+
+	void Damage() noexcept
+	{
+		--currHealth;
+		if (currHealth <= 0)
+		{
+			isAlive = false;
+		}
+	}
+
+	void Render(const Texture2D& texture) const noexcept;
 	void Update();
 };

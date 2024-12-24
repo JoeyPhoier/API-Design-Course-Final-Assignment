@@ -3,7 +3,7 @@
 #include "MyTexture2D.h"
 #include "RayUtils.h"
 
-class Barrier
+class Barrier final
 {
 private:
 	//TODO: Do all entities need an active flag? Consider getting rid of them.

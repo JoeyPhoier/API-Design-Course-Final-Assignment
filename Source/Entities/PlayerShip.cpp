@@ -2,13 +2,11 @@
 #include "RayUtils.h"
 #include <iostream>
 
-void PlayerShip::Initialize()
+PlayerShip::PlayerShip()
 {
-	// TODO: Get rid of two step init.
-
-	float window_width = (float)GetScreenWidth();
-	x_pos = window_width / 2;
-	std::cout << "Find Player -X:" << GetScreenWidth() / 2 << "Find Player -Y" << GetScreenHeight() - player_base_height << std::endl;
+	//TODO: Get rid of magic 70 value;
+	position = { static_cast<float>(GetScreenWidth() * .5f),
+				 static_cast<float>(GetScreenHeight() - 70) };
 }
 
 void PlayerShip::Update()
@@ -16,7 +14,7 @@ void PlayerShip::Update()
 	// TODO: Move these to an input processing member maybe.
 
 	//Movement
-	direction = 0;
+	float direction = 0;
 	if (IsKeyDown(KEY_LEFT))
 	{
 		direction--;
@@ -26,16 +24,16 @@ void PlayerShip::Update()
 		direction++;
 	}
 
-	x_pos += speed * direction;
+	position.x += speed * direction;
 
-	if (x_pos < 0 + radius)
+	const float RightEdge = static_cast<float>(GetScreenWidth()) - radius;
+	if (position.x < 0 + radius)
 	{
-		x_pos = 0 + radius;
+		position.x = radius;
 	}
-	// TODO: Cast things properly.
-	else if (x_pos > GetScreenWidth() - radius)
+	else if (position.x > RightEdge)
 	{
-		x_pos = GetScreenWidth() - radius;
+		position.x = RightEdge;
 	}
 
 	//Determine frame for animation
@@ -54,7 +52,7 @@ void PlayerShip::Update()
 	}
 }
 
-void PlayerShip::Render(const Texture2D& texture)
+void PlayerShip::Render(const Texture2D& texture) const noexcept
 {
-	DrawTextureQuick(texture, {x_pos, GetScreenHeight() - player_base_height}, .3f);
+	DrawTextureQuick(texture, position, renderScale);
 }
