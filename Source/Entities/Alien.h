@@ -40,7 +40,6 @@ public:
 	void ResetArmy() noexcept;
 
 	void Update() noexcept;
-	void EraseDeadEntities() noexcept;
 
 	void Render(const Texture2D& alienTexture, const Texture2D& projectileTexture) const noexcept;
 };

@@ -87,23 +87,6 @@ void AlienArmy::Update() noexcept
 	}
 }
 
-void AlienArmy::EraseDeadEntities() noexcept
-{
-	auto IsDeadA = [&](const Alien& alien)
-		{
-			return !alien.IsAlive();
-		};
-	auto lastValidItA = std::remove_if(alienSpan.begin(), alienSpan.end(), IsDeadA);
-	alienSpan.erase(lastValidItA, alienSpan.end());
-
-	auto IsDeadL = [&](const Projectile& laser)
-		{
-			return !laser.IsAlive();
-		};
-	auto lastValidItL = std::remove_if(alienLasers.begin(), alienLasers.end(), IsDeadL);
-	alienLasers.erase(lastValidItL, alienLasers.end());
-}
-
 void AlienArmy::Render(const Texture2D& alienTexture, const Texture2D& projectileTexture) const noexcept
 {
 	std::ranges::for_each(alienSpan, [&](const Alien& alien)

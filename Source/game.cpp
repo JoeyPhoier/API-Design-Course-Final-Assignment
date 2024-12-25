@@ -141,7 +141,6 @@ void Game::Update()
 
 		//TODO: Collision checks should be handled in a separate function, or by member methods.
 		//CHECK ALL COLLISONS HERE
-
 		auto CheckProjectileAgainstBarriers = [&](Projectile& projectile)
 			{
 				for (auto& barrier : Barriers)
@@ -188,23 +187,15 @@ void Game::Update()
 			Projectiles.push_back(Projectile(player.position, true));
 		}
 
-		//TODO: Replace with a for range or algo
 		// REMOVE INACTIVE/DEAD ENITITIES
-		alienArmy.EraseDeadEntities();
-
-		auto IsProjectileDead = [&](const Projectile& alien)
+		auto IsEntityDead = [&](const BaseEntity& entity)
 			{
-				return !alien.IsAlive();
+				return !entity.IsAlive();
 			};
-		auto lastValidItProjectile = std::remove_if(Projectiles.begin(), Projectiles.end(), IsProjectileDead);
-		Projectiles.erase(lastValidItProjectile, Projectiles.end());
-
-		auto IsBarrierDead = [&](const Barrier& alien)
-			{
-				return !alien.IsAlive();
-			};
-		auto lastValidItBarrier = std::remove_if(Barriers.begin(), Barriers.end(), IsBarrierDead);
-		Barriers.erase(lastValidItBarrier, Barriers.end());
+		std::erase_if(Projectiles, IsEntityDead);
+		std::erase_if(Barriers, IsEntityDead);
+		std::erase_if(alienArmy.alienSpan, IsEntityDead);
+		std::erase_if(alienArmy.alienLasers, IsEntityDead);
 	}
 	break;
 	case State::ENDSCREEN:
