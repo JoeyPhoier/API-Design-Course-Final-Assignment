@@ -93,6 +93,7 @@ void Game::Update()
 
 		break;
 	case State::GAMEPLAY:
+	{
 		//Code
 		if (IsKeyReleased(KEY_Q))
 		{
@@ -102,7 +103,7 @@ void Game::Update()
 
 		//Update Player
 		player.Update();
-		
+
 		//TODO: Replace with a for range loop or an algo.
 		//Update Aliens and Check if they are past player
 		alienArmy.Update();
@@ -140,47 +141,38 @@ void Game::Update()
 
 		//TODO: Collision checks should be handled in a separate function, or by member methods.
 		//CHECK ALL COLLISONS HERE
-		for (int i = 0; i < Projectiles.size(); i++)
-		{
-			if (Projectiles[i].playerProjectile)
+
+		auto CheckProjectileAgainstBarriers = [&](Projectile& projectile)
 			{
-				for (int a = 0; a < alienArmy.alienSpan.size(); a++)
+				for (auto& barrier : Barriers)
 				{
-					if(MyCheckCollision_AABBCircle(Projectiles[i].position, Projectiles[i].size, alienArmy.alienSpan[a].position, alienArmy.alienSpan[a].radius))
+					if (MyCheckCollision_AABBCircle(projectile.position, projectile.size, barrier.position, barrier.radius))
 					{
-						// Kill!
-						std::cout << "Hit! \n";
-						// Set them as inactive, will be killed later
-						Projectiles[i].Destroy();
-						alienArmy.alienSpan[a].Kill();
-						score += 100;
+						projectile.Destroy();
+						barrier.Damage();
 					}
 				}
-			}
-			for (int b = 0; b < Barriers.size(); b++)
+			};
+		auto CheckProjectileAgainstAliens = [&](Projectile& projectile)
 			{
-				if (MyCheckCollision_AABBCircle(Projectiles[i].position, Projectiles[i].size, Barriers[b].position, Barriers[b].radius))
+				for (auto& alien : alienArmy.alienSpan)
 				{
-					// Kill!
-					std::cout << "Hit! \n";
-					// Set them as inactive, will be killed later
-					Projectiles[i].Destroy();
-					Barriers[b].Damage();
+					if (MyCheckCollision_AABBCircle(projectile.position, projectile.size, alien.position, alien.radius))
+					{
+						projectile.Destroy();
+						alien.Kill();
+					}
 				}
-			}
-		}
+			};
 
+		for (auto& projectile : Projectiles)
+		{
+			CheckProjectileAgainstBarriers(projectile);
+			CheckProjectileAgainstAliens(projectile);
+		}
 		for (auto& alienLaser : alienArmy.alienLasers)
 		{
-			//TODO: Optimize the common loops into named lambdas
-			for (auto& barrier : Barriers)
-			{
-				if (MyCheckCollision_AABBCircle(alienLaser.position, alienLaser.size, barrier.position, barrier.radius))
-				{
-					alienLaser.Destroy();
-					barrier.Damage();
-				}
-			}
+			CheckProjectileAgainstBarriers(alienLaser);
 			if (MyCheckCollision_AABBCircle(alienLaser.position, alienLaser.size, player.position, player.radius))
 			{
 				alienLaser.Destroy();
@@ -200,25 +192,20 @@ void Game::Update()
 		// REMOVE INACTIVE/DEAD ENITITIES
 		alienArmy.EraseDeadEntities();
 
-		for (int i = 0; i < Projectiles.size(); i++)
-		{
-			if (!Projectiles[i].IsAlive())
+		auto IsProjectileDead = [&](const Projectile& alien)
 			{
-				Projectiles.erase(Projectiles.begin() + i);
-				// Prevent the loop from skipping an instance because of index changes, since all insances after
-				// the killed objects are moved down in index. This is the same for all loops with similar function
-				i--;
-			}
-		}
-		
-		for (int i = 0; i < Barriers.size(); i++)
-		{
-			if (!Barriers[i].IsAlive())
+				return !alien.IsAlive();
+			};
+		auto lastValidItProjectile = std::remove_if(Projectiles.begin(), Projectiles.end(), IsProjectileDead);
+		Projectiles.erase(lastValidItProjectile, Projectiles.end());
+
+		auto IsBarrierDead = [&](const Barrier& alien)
 			{
-				Barriers.erase(Barriers.begin() + i);
-				i--;
-			}
-		}
+				return !alien.IsAlive();
+			};
+		auto lastValidItBarrier = std::remove_if(Barriers.begin(), Barriers.end(), IsBarrierDead);
+		Barriers.erase(lastValidItBarrier, Barriers.end());
+	}
 	break;
 	case State::ENDSCREEN:
 		//Code
