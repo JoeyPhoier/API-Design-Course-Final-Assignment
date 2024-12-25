@@ -9,7 +9,7 @@
 #include "Alien.h"
 
 //TODO: Convert all enums to enum classes.
-enum struct State
+enum class State
 {
 	STARTSCREEN,
 	GAMEPLAY,
@@ -25,26 +25,14 @@ struct PlayerData
 
 struct Game
 {
-	// Gamestate
-	State gameState = {};
+	State gameState = State::STARTSCREEN;
 
-	// Score
-	int score;
-
-	// for later, make a file where you can adjust the number of walls (config file) 
-	int wallCount = 5;
-
-	//TODO: Should be be a static value part of alien.
-	//Aliens shooting
-	float shootTimer = 0;
+	int score = 0;
 
 	//Aliens stuff? (idk cause liv wrote this)
 	Rectangle rec = { 0, 0 ,0 ,0 }; 
 
-	//TODO: width and height should be in a vector, probably.
-	int formationWidth = 8;
-	int formationHeight = 5;
-	int alienSpacing = 80;
+
 	//TODO: What is this.
 	int formationX = 100;
 	int formationY = 50;
@@ -62,8 +50,6 @@ struct Game
 	void Update();
 	void Render();
 
-	void SpawnAliens();
-
 	bool CheckCollision(Vector2 circlePos, float circleRadius, Vector2 lineTop, Vector2 lineBottom);
 
 	bool CheckNewHighScore();
@@ -75,9 +61,10 @@ struct Game
 
 	//Entities
 	PlayerShip player;
-	std::vector<Alien> Aliens;
+	AlienArmy alienArmy;
 	std::vector<Projectile> Projectiles;
 	std::vector<Barrier> Barriers;
+	int wallCount = 5;
 
 	//Textures
 	std::vector<MyTexture2D> playerTextures;

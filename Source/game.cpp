@@ -6,6 +6,7 @@
 #include <fstream>
 #include "RayUtils.h"
 #include "Collision.h"
+#include <algorithm>
 
 // MATH FUNCTIONS
 float lineLength(Vector2 A, Vector2 B) //Uses pythagoras to calculate the length of a line
@@ -38,11 +39,8 @@ void Game::Start()
 	float wall_distance = window_width / (wallCount + 1); 
 	for (int i = 0; i < wallCount; i++)
 	{
-		Barrier newWalls;
-		newWalls.position.y = window_height - 250; 
-		newWalls.position.x = wall_distance * (i + 1); 
-
-		Barriers.push_back(newWalls); 
+		Barriers.push_back(Barrier({ wall_distance * (i + 1) ,
+									 window_height - 250 }));
 	}
 
 	//creating player
@@ -54,7 +52,7 @@ void Game::Start()
 	playerTextures.emplace_back("./Assets/Ship3.png");
 
 	//creating aliens
-	SpawnAliens();
+	alienArmy.ResetArmy();
 
 	//reset score
 	score = 0;
@@ -69,7 +67,8 @@ void Game::End()
 	//SAVE SCORE AND UPDATE SCOREBOARD
 	Projectiles.clear();
 	Barriers.clear();
-	Aliens.clear();
+	alienArmy.alienSpan.clear();
+	alienArmy.alienLasers.clear();
 	newHighScore = CheckNewHighScore();
 	gameState = State::ENDSCREEN;
 }
@@ -90,8 +89,6 @@ void Game::Update()
 		if (IsKeyReleased(KEY_SPACE))
 		{
 			Start();
-
-
 		}
 
 		break;
@@ -108,15 +105,11 @@ void Game::Update()
 		
 		//TODO: Replace with a for range loop or an algo.
 		//Update Aliens and Check if they are past player
-		for (int i = 0; i < Aliens.size(); i++)
+		alienArmy.Update();
+		/*if (alienArmy.alienSpan[i].position.y > GetScreenHeight() - player.radius)
 		{
-			Aliens[i].Update(); 
-
-			if (Aliens[i].position.y > GetScreenHeight() - player.radius)
-			{
-				End();
-			}
-		}
+			End();
+		}*/
 
 		//TODO: This should probably be processed when the player takes damage, not every frame.
 		//End game if player dies
@@ -127,9 +120,9 @@ void Game::Update()
 
 		//TODO: This should probably be processed when an alien is destroyed, not every frame.
 		//Spawn new aliens if aliens run out
-		if (Aliens.size() < 1)
+		if (alienArmy.alienSpan.size() < 1)
 		{
-			SpawnAliens();
+			alienArmy.ResetArmy();
 		}
 
 		//Update Background Parallax
@@ -148,34 +141,19 @@ void Game::Update()
 		{
 			if (Projectiles[i].playerProjectile)
 			{
-				for (int a = 0; a < Aliens.size(); a++)
+				for (int a = 0; a < alienArmy.alienSpan.size(); a++)
 				{
-					if(MyCheckCollision_AABBCircle(Projectiles[i].position, Projectiles[i].size, Aliens[a].position, Aliens[a].radius))
+					if(MyCheckCollision_AABBCircle(Projectiles[i].position, Projectiles[i].size, alienArmy.alienSpan[a].position, alienArmy.alienSpan[a].radius))
 					{
 						// Kill!
 						std::cout << "Hit! \n";
 						// Set them as inactive, will be killed later
 						Projectiles[i].Destroy();
-						Aliens[a].Kill();
+						alienArmy.alienSpan[a].Kill();
 						score += 100;
 					}
 				}
 			}
-
-			//ENEMY PROJECTILES HERE
-			for (int i = 0; i < Projectiles.size(); i++)
-			{
-				if (!Projectiles[i].playerProjectile)
-				{
-					if (MyCheckCollision_AABBCircle(Projectiles[i].position, Projectiles[i].size, player.position, player.radius))
-					{
-						std::cout << "dead!\n"; 
-						Projectiles[i].Destroy();
-						player.Damage();
-					}
-				}
-			}
-
 			for (int b = 0; b < Barriers.size(); b++)
 			{
 				if (MyCheckCollision_AABBCircle(Projectiles[i].position, Projectiles[i].size, Barriers[b].position, Barriers[b].radius))
@@ -189,6 +167,24 @@ void Game::Update()
 			}
 		}
 
+		for (auto& alienLaser : alienArmy.alienLasers)
+		{
+			//TODO: Optimize the common loops into named lambdas
+			for (auto& barrier : Barriers)
+			{
+				if (MyCheckCollision_AABBCircle(alienLaser.position, alienLaser.size, barrier.position, barrier.radius))
+				{
+					alienLaser.Destroy();
+					barrier.Damage();
+				}
+			}
+			if (MyCheckCollision_AABBCircle(alienLaser.position, alienLaser.size, player.position, player.radius))
+			{
+				alienLaser.Destroy();
+				player.Damage();
+			}
+		}
+
 		//TODO: Player shooting should be handled in player update.
 		//MAKE PROJECTILE
 		if (IsKeyPressed(KEY_SPACE))
@@ -197,28 +193,10 @@ void Game::Update()
 			Projectiles.push_back(Projectile(player.position, true));
 		}
 
-		//TODO: Should probably be handled by the alien update.
-		//Aliens Shooting
-		shootTimer += 1;
-		if (shootTimer > 59) //once per second
-		{
-			int randomAlienIndex = 0;
-
-			if (Aliens.size() > 1)
-			{
-				randomAlienIndex = rand() % Aliens.size();
-			}
-
-			Projectile newProjectile;
-			newProjectile.position = Aliens[randomAlienIndex].position;
-			newProjectile.position.y += 40;
-			newProjectile.playerProjectile = false;
-			Projectiles.push_back(newProjectile);
-			shootTimer = 0;
-		}
-
 		//TODO: Replace with a for range or algo
 		// REMOVE INACTIVE/DEAD ENITITIES
+		alienArmy.EraseDeadEntities();
+
 		for (int i = 0; i < Projectiles.size(); i++)
 		{
 			if (!Projectiles[i].IsAlive())
@@ -229,16 +207,7 @@ void Game::Update()
 				i--;
 			}
 		}
-		for (int i = 0; i < Aliens.size(); i++)
-		{
-			if (!Aliens[i].IsAlive())
-			{
-				//TODO: Use a friend member predicate for this
-
-				Aliens.erase(Aliens.begin() + i);
-				i--;
-			}
-		}
+		
 		for (int i = 0; i < Barriers.size(); i++)
 		{
 			if (!Barriers[i].IsAlive())
@@ -259,7 +228,6 @@ void Game::Update()
 		}
 	
 		//TODO: Make the check for newHighScore. Rn its done elsewhere, which it shouldnt be.
-
 		if (newHighScore)
 		{
 			//TODO: Throw cursor changing into its own function.
@@ -318,15 +286,9 @@ void Game::Update()
 
 				newHighScore = false;
 			}
-
-
 		}
-		
-
-
 		break;
 	default:
-		//SHOULD NOT HAPPEN
 		break;
 	}
 }
@@ -366,10 +328,7 @@ void Game::Render()
 		}
 
 		//alien rendering  
-		for (int i = 0; i < Aliens.size(); i++)
-		{
-			Aliens[i].Render(AlienTexture);
-		}
+		alienArmy.Render(AlienTexture, ProjectileTexture);
 
 		break;
 	case State::ENDSCREEN:
@@ -379,8 +338,6 @@ void Game::Render()
 		if (newHighScore)
 		{
 			DrawText("NEW HIGHSCORE!", 600, 300, 60, YELLOW);
-
-
 
 			// BELOW CODE IS FOR NAME INPUT RENDER
 			DrawText("PLACE MOUSE OVER INPUT BOX!", 600, 400, 20, YELLOW);
@@ -412,14 +369,12 @@ void Game::Render()
 					{
 						DrawText("_", (int)textBox.x + 8 + MeasureText(name, 40), (int)textBox.y + 12, 40, MAROON);
 					}
-
 				}
 				else
 				{
 					//Name needs to be shorter
 					DrawText("Press BACKSPACE to delete chars...", 600, 650, 20, YELLOW);
 				}
-				
 			}
 
 			// Explain how to continue when name is input
@@ -427,7 +382,6 @@ void Game::Render()
 			{
 				DrawText("PRESS ENTER TO CONTINUE", 600, 800, 40, YELLOW);
 			}
-
 		}
 		else {
 			// If no highscore or name is entered, show scoreboard and call it a day
@@ -443,32 +397,11 @@ void Game::Render()
 				DrawText(TextFormat("%i", Leaderboard[i].score), 350, 140 + (i * 40), 40, YELLOW);
 			}
 		}
-
-		
-
-
 		break;
 	default:
 		//SHOULD NOT HAPPEN
 		break;
 	}
-}
-
-void Game::SpawnAliens()
-{
-	for (int row = 0; row < formationHeight; row++) {
-		for (int col = 0; col < formationWidth; col++) {
-			Alien newAlien = Alien();
-			//TODO: Why is the alien getting instantated with wrongful data? These should be in the constructor.
-			newAlien.position.x = formationX + 450 + (col * alienSpacing);
-			newAlien.position.y = formationY + (row * alienSpacing);
-			//TODO: Replace with Emplace back
-			Aliens.push_back(newAlien);
-			std::cout << "Find Alien -X:" << newAlien.position.x << std::endl;
-			std::cout << "Find Alien -Y:" << newAlien.position.y << std::endl;
-		}
-	}
-
 }
 
 bool Game::CheckNewHighScore()
@@ -477,7 +410,6 @@ bool Game::CheckNewHighScore()
 	{
 		return true;
 	}
-
 	return false;
 }
 

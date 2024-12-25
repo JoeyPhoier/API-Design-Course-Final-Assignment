@@ -17,6 +17,9 @@ public:
 	int radius = 60;
 	int currHealth = maxHealth;
 
+	explicit Barrier(Vector2 spawnPoint) noexcept : position(spawnPoint)
+	{};
+
 	[[nodiscard]] bool IsAlive() const noexcept
 	{
 		return isAlive;
