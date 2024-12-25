@@ -26,11 +26,7 @@ void Alien::Update() noexcept
 	}
 }
 
-void Alien::Render(const Texture2D& texture) const noexcept
-{
-	DrawTextureQuick(texture, position, renderScale);
-}
-
+//ALIEN ARMY
 void AlienArmy::ResetArmy() noexcept
 {
 	alienSpan.clear();
@@ -87,7 +83,7 @@ void AlienArmy::Update() noexcept
 		{
 			randomAlienIndex = rand() % alienSpan.size();
 		}
-		alienLasers.push_back(Projectile(alienSpan[randomAlienIndex].position, false));
+		alienLasers.emplace_back(alienSpan[randomAlienIndex].position, false);
 	}
 }
 

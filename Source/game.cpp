@@ -39,8 +39,8 @@ void Game::Start()
 	float wall_distance = window_width / (wallCount + 1); 
 	for (int i = 0; i < wallCount; i++)
 	{
-		Barriers.push_back(Barrier({ wall_distance * (i + 1) ,
-									 window_height - 250 }));
+		Barriers.emplace_back(Vector2{ wall_distance * (i + 1) ,
+									   window_height - 250 });
 	}
 
 	//creating player
@@ -148,7 +148,7 @@ void Game::Update()
 				{
 					if (MyCheckCollision_AABBCircle(projectile.position, projectile.size, barrier.position, barrier.radius))
 					{
-						projectile.Destroy();
+						projectile.Damage();
 						barrier.Damage();
 					}
 				}
@@ -159,8 +159,8 @@ void Game::Update()
 				{
 					if (MyCheckCollision_AABBCircle(projectile.position, projectile.size, alien.position, alien.radius))
 					{
-						projectile.Destroy();
-						alien.Kill();
+						projectile.Damage();
+						alien.Damage();
 					}
 				}
 			};
@@ -175,7 +175,7 @@ void Game::Update()
 			CheckProjectileAgainstBarriers(alienLaser);
 			if (MyCheckCollision_AABBCircle(alienLaser.position, alienLaser.size, player.position, player.radius))
 			{
-				alienLaser.Destroy();
+				alienLaser.Damage();
 				player.Damage();
 			}
 		}

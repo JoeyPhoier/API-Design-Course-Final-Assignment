@@ -1,30 +1,22 @@
 #pragma once
 #include "raylib.h"
-#include "MyTexture2D.h"
+#include "BaseEntity.h"
+#include <format>
 
-class Barrier final
+class Barrier final : public BaseEntity
 {
 private:
-	//TODO: Do all entities need an active flag? Consider getting rid of them.
-	bool isAlive = true;
 	static constexpr int maxHealth = 50;
 
-	static constexpr float renderScale = .3f;
 	static constexpr int textSize = 40;
 	static constexpr Vector2 textOffset = { -21, 10 };
 public:
-	Vector2 position;
 	int radius = 60;
 	int currHealth = maxHealth;
 
-	explicit Barrier(Vector2 spawnPoint) noexcept : position(spawnPoint)
-	{};
+	explicit Barrier(Vector2 spawnPoint) : BaseEntity(spawnPoint) {};
 
-	[[nodiscard]] bool IsAlive() const noexcept
-	{
-		return isAlive;
-	}
-	void Damage() noexcept
+	void Damage() noexcept override
 	{
 		--currHealth;
 		if (currHealth <= 0)
@@ -33,5 +25,13 @@ public:
 		}
 	}
 
-	void Render(const Texture2D& texture) const noexcept;
+	void Update() noexcept override {};
+	void Render(const Texture2D& texture) const noexcept override
+	{
+		BaseEntity::Render(texture);
+		DrawText(std::format("{}", currHealth).c_str(),
+				 static_cast<int>(position.x + textOffset.x),
+				 static_cast<int>(position.y + textOffset.y),
+				 40, RED);
+	}
 };

@@ -1,32 +1,28 @@
 #pragma once
 #include "raylib.h"
-#include "MyTexture2D.h"
-#include "RayUtils.h"
+#include "BaseEntity.h"
 
-class Projectile final
+class Projectile final : public BaseEntity
 {
 private:
-	bool isAlive = true;
 	static constexpr int speed = 15;
 public:
-	Vector2 position = { 0,0 };
 	static constexpr Vector2 size = { 10,10 };
 	bool playerProjectile = true;
 
 	Projectile() = default;
-	Projectile(Vector2 spawnPoint, bool wasFiredByPlayer) noexcept : position(spawnPoint), playerProjectile(wasFiredByPlayer)
+	Projectile(Vector2 spawnPoint, bool wasFiredByPlayer) noexcept : BaseEntity(spawnPoint), playerProjectile(wasFiredByPlayer)
 	{};
 
-	[[nodiscard]] bool IsAlive() const noexcept
+	void Update() noexcept override
 	{
-		return isAlive;
-	}
-	void Destroy() noexcept
-	{
-		isAlive = false;
-	}
+		position.y += playerProjectile ? -speed : +speed;
 
-	void Update();
-	void Render(const Texture2D& texture) const noexcept;
+		const auto BottomEdge = static_cast<float>(GetScreenHeight());
+		if (const bool isOutOfBounds = position.y < 0 || position.y > BottomEdge)
+		{
+			Damage();
+		}
+	}
 };
 

@@ -30,15 +30,6 @@
     <ClCompile Include="Source\level.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Entities\Projectile.cpp">
-      <Filter>Source Files\Entities</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Entities\PlayerShip.cpp">
-      <Filter>Source Files\Entities</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Entities\Barrier.cpp">
-      <Filter>Source Files\Entities</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Entities\Alien.cpp">
       <Filter>Source Files\Entities</Filter>
     </ClCompile>
@@ -70,6 +61,9 @@
     </ClInclude>
     <ClInclude Include="Source\Collision.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Entities\BaseEntity.h">
+      <Filter>Header Files\Entities</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

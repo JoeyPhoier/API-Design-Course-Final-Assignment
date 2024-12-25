@@ -5,35 +5,18 @@
 #include "PlayerShip.h"
 #include <vector>
 
-class Alien final
+class Alien final : public BaseEntity
 {
 private:
 	friend class AlienArmy;
-	bool isAlive = true;
-	static float speed;
-
-	static constexpr float renderScale = .3f;
-public:
-	Vector2 position = { 0, 0 };
-
-	static constexpr float radius = 30;
 	static bool shouldMoveDownThisFrame;
 
-	Alien() = default;
-	explicit Alien(Vector2 spawnPoint) noexcept : position(spawnPoint)
-	{};
+	static float speed;
+public:
+	static constexpr float radius = 30;
 
-	[[nodiscard]] bool IsAlive() const noexcept
-	{
-		return isAlive;
-	}
-	void Kill() noexcept
-	{
-		isAlive = false;
-	}
-
+	explicit Alien(Vector2 spawnPoint) : BaseEntity(spawnPoint) {};
 	void Update() noexcept;
-	void Render(const Texture2D& texture) const noexcept;
 };
 
 class AlienArmy final
@@ -42,9 +25,8 @@ private:
 	static constexpr float maxLaserCooldown = 2;
 	float currLaserCooldown = maxLaserCooldown;
 
-	Vector2 formationSize = { 8,5 };
-	int alienSpacing = 80;
-
+	static constexpr Vector2 formationSize = { 8,5 };
+	static constexpr float alienSpacing = 80;
 public:
 	Vector2 position = { 0, 0 };
 
