@@ -80,7 +80,7 @@ public:
 
 	void CheckForLaserInput(std::vector<Projectile>& playerLasers)
 	{
-		if (IsKeyPressed(KEY_SPACE))
+		if (IsKeyDown(KEY_SPACE))
 		{
 			//newProjectile.position.y = window_height - 130;
 			playerLasers.emplace_back(position, true);

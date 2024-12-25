@@ -1,7 +1,8 @@
 #include "Alien.h"
 #include "RayUtils.h"
 #include <algorithm>
-#include "Collision.h"
+#include "Collision.h"'
+#include <functional>
 
 float Alien::speed = 100;
 bool Alien::shouldMoveDownThisFrame = false;
@@ -54,14 +55,15 @@ void AlienArmy::ResetArmy() noexcept
 
 void AlienArmy::Update() noexcept
 {
-	std::ranges::for_each(alienSpan, [&](Alien& alien) noexcept
-						  {
-							  alien.Update();
-						  });
-	std::ranges::for_each(alienLasers, [&](Projectile& laser) noexcept
-						  {
-							  laser.Update();
-						  });
+	//Spawn new aliens if aliens run out
+	if (alienSpan.size() < 1)
+	{
+		ResetArmy();
+		return;
+	}
+
+	std::ranges::for_each(alienSpan, std::mem_fn(&Alien::Update));
+	std::ranges::for_each(alienLasers, std::mem_fn(&Projectile::Update));
 
 	if (Alien::shouldMoveDownThisFrame)
 	{
@@ -85,6 +87,14 @@ void AlienArmy::Update() noexcept
 		}
 		alienLasers.emplace_back(alienSpan[randomAlienIndex].position, false);
 	}
+}
+
+bool AlienArmy::HasAlienReachedPlayer(const Vector2& playerPosition, const float playerRadius) const noexcept
+{
+	return std::ranges::any_of(alienSpan, [&](const Alien& alien)
+							   {
+								   return (alien.position.y + alien.radius > playerPosition.y - playerRadius);
+							   });
 }
 
 void AlienArmy::Render(const Texture2D& alienTexture, const Texture2D& projectileTexture) const noexcept

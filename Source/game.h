@@ -45,9 +45,10 @@ struct Game
 	void End();
 
 	void Continue();
-	void Launch();
 
 	void Update();
+	void CollisionChecks() noexcept;
+	void CleanUpDeadEntities() noexcept;
 	void Render();
 
 	bool CheckCollision(Vector2 circlePos, float circleRadius, Vector2 lineTop, Vector2 lineBottom);
@@ -62,7 +63,7 @@ struct Game
 	//Entities
 	PlayerShip player;
 	AlienArmy alienArmy;
-	std::vector<Projectile> Projectiles;
+	std::vector<Projectile> playerLasers;
 	std::vector<Barrier> Barriers;
 	int wallCount = 5;
 
@@ -92,4 +93,22 @@ struct Game
 
 	//TODO: What is this being used for? Doesnt seem necessary.
 	int framesCounter = 0;
+};
+
+template <typename T>
+concept DerivedFromEntity = std::is_base_of_v<BaseEntity, T>;
+
+template <DerivedFromEntity T>
+bool CollisionCheck_ProjectileVSEntityVector(Projectile& projectile, std::vector<T>& entityVector) noexcept
+{
+	for (auto& entity : entityVector)
+	{
+		if (MyCheckCollision_AABBCircle(projectile.position, projectile.size, entity.position, entity.radius))
+		{
+			projectile.Damage();
+			entity.Damage();
+			return true;
+		}
+	}
+	return false;
 };

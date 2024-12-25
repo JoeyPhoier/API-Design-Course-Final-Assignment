@@ -7,6 +7,7 @@
 #include "RayUtils.h"
 #include "Collision.h"
 #include <algorithm>
+#include <functional>
 
 // MATH FUNCTIONS
 float lineLength(Vector2 A, Vector2 B) //Uses pythagoras to calculate the length of a line
@@ -65,7 +66,7 @@ void Game::Start()
 void Game::End()
 {
 	//SAVE SCORE AND UPDATE SCOREBOARD
-	Projectiles.clear();
+	playerLasers.clear();
 	Barriers.clear();
 	alienArmy.alienSpan.clear();
 	alienArmy.alienLasers.clear();
@@ -86,123 +87,37 @@ void Game::Update()
 	case State::STARTSCREEN:
 		//Code 
 		//TODO: replace all usages of keyReleased with keydown.
-		if (IsKeyReleased(KEY_SPACE))
+		if (IsKeyPressed(KEY_SPACE))
 		{
 			Start();
 		}
 
 		break;
 	case State::GAMEPLAY:
-	{
 		//Code
-		if (IsKeyReleased(KEY_Q))
+		if (IsKeyPressed(KEY_Q))
 		{
-			//TODO: Add an early return or something.
 			End();
 		}
 
-		//Update Player
 		player.Update();
-
-		//TODO: Replace with a for range loop or an algo.
-		//Update Aliens and Check if they are past player
+		player.CheckForLaserInput(playerLasers);
+		backgroundPos.x = (static_cast<float>(GetScreenWidth()) * .5f) - (player.position.x / 15);
+		std::ranges::for_each(playerLasers, std::mem_fn(&Projectile::Update));
 		alienArmy.Update();
-		for (const Alien& alien : alienArmy.alienSpan)
-		{
-			if (alien.position.y > GetScreenHeight() - player.radius)
-			{
-				End();
-			}
-		}
-
-		//TODO: This should probably be processed when the player takes damage, not every frame.
-		//End game if player dies
-		if (player.currHealth <= 0)
+		if (alienArmy.HasAlienReachedPlayer(player.position, player.radius))
 		{
 			End();
 		}
-
-		//TODO: This should probably be processed when an alien is destroyed, not every frame.
-		//Spawn new aliens if aliens run out
-		if (alienArmy.alienSpan.size() < 1)
-		{
-			alienArmy.ResetArmy();
-		}
-
-		//Update Background Parallax
-		backgroundPos.x = (GetScreenWidth() * .5f) - (player.position.x / 15);
-
-		//TODO: Replace these with for loops or algos
-		//UPDATE PROJECTILE
-		for (int i = 0; i < Projectiles.size(); i++)
-		{
-			Projectiles[i].Update();
-		}
-
-		//TODO: Collision checks should be handled in a separate function, or by member methods.
-		//CHECK ALL COLLISONS HERE
-		auto CheckProjectileAgainstBarriers = [&](Projectile& projectile)
-			{
-				for (auto& barrier : Barriers)
-				{
-					if (MyCheckCollision_AABBCircle(projectile.position, projectile.size, barrier.position, barrier.radius))
-					{
-						projectile.Damage();
-						barrier.Damage();
-					}
-				}
-			};
-		auto CheckProjectileAgainstAliens = [&](Projectile& projectile)
-			{
-				for (auto& alien : alienArmy.alienSpan)
-				{
-					if (MyCheckCollision_AABBCircle(projectile.position, projectile.size, alien.position, alien.radius))
-					{
-						projectile.Damage();
-						alien.Damage();
-					}
-				}
-			};
-
-		for (auto& projectile : Projectiles)
-		{
-			CheckProjectileAgainstBarriers(projectile);
-			CheckProjectileAgainstAliens(projectile);
-		}
-		for (auto& alienLaser : alienArmy.alienLasers)
-		{
-			CheckProjectileAgainstBarriers(alienLaser);
-			if (MyCheckCollision_AABBCircle(alienLaser.position, alienLaser.size, player.position, player.radius))
-			{
-				alienLaser.Damage();
-				player.Damage();
-			}
-		}
-
-		//TODO: Player shooting should be handled in player update.
-		//MAKE PROJECTILE
-		if (IsKeyPressed(KEY_SPACE))
-		{
-			//newProjectile.position.y = window_height - 130;
-			Projectiles.push_back(Projectile(player.position, true));
-		}
-
-		// REMOVE INACTIVE/DEAD ENITITIES
-		auto IsEntityDead = [&](const BaseEntity& entity)
-			{
-				return !entity.IsAlive();
-			};
-		std::erase_if(Projectiles, IsEntityDead);
-		std::erase_if(Barriers, IsEntityDead);
-		std::erase_if(alienArmy.alienSpan, IsEntityDead);
-		std::erase_if(alienArmy.alienLasers, IsEntityDead);
-	}
+		
+		CollisionChecks();
+		CleanUpDeadEntities();
 	break;
 	case State::ENDSCREEN:
 		//Code
 	
 		//Exit endscreen
-		if (IsKeyReleased(KEY_ENTER) && !newHighScore)
+		if (IsKeyPressed(KEY_ENTER) && !newHighScore)
 		{
 			//TODO: Add an early exit
 			Continue();
@@ -259,7 +174,7 @@ void Game::Update()
 
 			// If the name is right legth and enter is pressed, exit screen by setting highscore to false and add 
 			// name + score to scoreboard
-			if (letterCount > 0 && letterCount < 9 && IsKeyReleased(KEY_ENTER))
+			if (letterCount > 0 && letterCount < 9 && IsKeyPressed(KEY_ENTER))
 			{
 				std::string nameEntry(name);
 
@@ -272,6 +187,47 @@ void Game::Update()
 	default:
 		break;
 	}
+}
+
+void Game::CollisionChecks() noexcept
+{
+	for (auto& projectile : playerLasers)
+	{
+		CollisionCheck_ProjectileVSEntityVector(projectile, Barriers);
+		if (CollisionCheck_ProjectileVSEntityVector(projectile, alienArmy.alienSpan))
+		{
+			score += 100;
+		}
+	}
+	for (auto& alienLaser : alienArmy.alienLasers)
+	{
+		CollisionCheck_ProjectileVSEntityVector(alienLaser, Barriers);
+		if (MyCheckCollision_AABBCircle(alienLaser.position, alienLaser.size, player.position, player.radius))
+		{
+			alienLaser.Damage();
+			player.Damage();
+		}
+	}
+}
+
+void Game::CleanUpDeadEntities() noexcept
+{
+	//End game if player dies
+	if (!player.IsAlive())
+	{
+		End();
+		return;
+	}
+
+	// REMOVE INACTIVE/DEAD ENITITIES
+	auto IsEntityDead = [&](const BaseEntity& entity) noexcept
+		{
+			return !entity.IsAlive();
+		};
+	std::erase_if(playerLasers, IsEntityDead);
+	std::erase_if(Barriers, IsEntityDead);
+	std::erase_if(alienArmy.alienSpan, IsEntityDead);
+	std::erase_if(alienArmy.alienLasers, IsEntityDead);
 }
 
 
@@ -297,9 +253,9 @@ void Game::Render()
 
 		//TODO: All of these should be in range loops or algos
 		//projectile rendering
-		for (int i = 0; i < Projectiles.size(); i++)
+		for (int i = 0; i < playerLasers.size(); i++)
 		{
-			Projectiles[i].Render(ProjectileTexture);
+			playerLasers[i].Render(ProjectileTexture);
 		}
 
 		// wall rendering 
