@@ -10,8 +10,6 @@ protected:
 public:
 	Vector2 position = { 0, 0 };
 
-	static constexpr float radius = 30;
-
 	BaseEntity() = default;
 	explicit BaseEntity(Vector2 spawnPoint) noexcept : position(spawnPoint)
 	{};

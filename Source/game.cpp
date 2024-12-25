@@ -8,6 +8,7 @@
 #include "Collision.h"
 #include <algorithm>
 #include <functional>
+#include <format>
 
 // MATH FUNCTIONS
 float lineLength(Vector2 A, Vector2 B) //Uses pythagoras to calculate the length of a line
@@ -47,10 +48,6 @@ void Game::Start()
 	//creating player
 	PlayerShip newPlayer;
 	player = newPlayer;
-
-	playerTextures.emplace_back("./Assets/Ship1.png");
-	playerTextures.emplace_back("./Assets/Ship2.png");
-	playerTextures.emplace_back("./Assets/Ship3.png");
 
 	//creating aliens
 	alienArmy.ResetArmy();
@@ -242,31 +239,19 @@ void Game::Render()
 		break;
 	case State::GAMEPLAY:
 		DrawTextureQuick(backgroundTexture.get(), backgroundPos, 1.1f);
-
-		//TODO: Use std::format
-		DrawText(TextFormat("Score: %i", score), 50, 20, 40, YELLOW);
-		DrawText(TextFormat("Lives: %i", player.currHealth), 50, 70, 40, YELLOW);
-
-		//player rendering 
-		//TODO: Player Render shouldnt require anything
-		player.Render(playerTextures[player.activeTexture]);
-
-		//TODO: All of these should be in range loops or algos
-		//projectile rendering
-		for (int i = 0; i < playerLasers.size(); i++)
-		{
-			playerLasers[i].Render(ProjectileTexture);
-		}
-
-		// wall rendering 
-		for (int i = 0; i < Barriers.size(); i++)
-		{
-			Barriers[i].Render(BarrierTexture); 
-		}
-
-		//alien rendering  
+		std::ranges::for_each(playerLasers, [&](const Projectile& laser)
+							  {
+								  laser.Render(ProjectileTexture);
+							  });
+		std::ranges::for_each(Barriers, [&](const Barrier& barrier)
+							  {
+								  barrier.Render(BarrierTexture);
+							  });
+		player.Render(playerTexture);
 		alienArmy.Render(AlienTexture, ProjectileTexture);
 
+		DrawText(std::format("Score: {}", score).c_str(), 50, 20, 40, YELLOW);
+		DrawText(std::format("Lives: {}", player.currHealth).c_str(), 50, 70, 40, YELLOW);
 		break;
 	case State::ENDSCREEN:
 		//Code

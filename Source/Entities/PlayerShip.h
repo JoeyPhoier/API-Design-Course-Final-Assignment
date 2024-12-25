@@ -10,14 +10,17 @@ private:
 	static constexpr int maxHealth = 3;
 
 	static constexpr float speed = 7;
+	
+	static constexpr float maxSpriteTimer = .5f;
+	float currSpriteTimer = maxSpriteTimer;
+	int activeTexture = 0;
+
+	static constexpr float maxLaserCooldown = 0.4f;
+	float currLaserCooldown = 0;
 public:
 	float radius = 50;
 
 	int currHealth = maxHealth;
-
-	//TODO: Use a proper spritesheet and handle this privately
-	int activeTexture = 0;
-	float timer = 0;
 
 	PlayerShip() noexcept
 	{
@@ -37,8 +40,6 @@ public:
 
 	void Update() noexcept override
 	{
-		// TODO: Move these to an input processing member maybe.
-
 		//Movement
 		float direction = 0;
 		if (IsKeyDown(KEY_LEFT))
@@ -61,29 +62,44 @@ public:
 			position.x = RightEdge;
 		}
 
-		//Determine frame for animation
-		timer += GetFrameTime();
-
-		// TODO: Weird check doing a timer comparison twice. 
-		if (timer > 0.4 && activeTexture == 2)
+		currSpriteTimer += GetFrameTime();
+		if (currSpriteTimer >= maxSpriteTimer)
 		{
-			activeTexture = 0;
-			timer = 0;
+			currSpriteTimer = 0;
+			activeTexture = (activeTexture + 1) % 3;
 		}
-		else if (timer > 0.4)
-		{
-			activeTexture++;
-			timer = 0;
-		}
-
 	}
 
-	void CheckForLaserInput(std::vector<Projectile>& playerLasers)
+	void CheckForLaserInput(std::vector<Projectile>& playerLasers) noexcept
 	{
-		if (IsKeyDown(KEY_SPACE))
+		if (currLaserCooldown > 0)
 		{
-			//newProjectile.position.y = window_height - 130;
+			currLaserCooldown -= std::min(currLaserCooldown, GetFrameTime());
+			return;
+		}
+
+		const bool CanFire = currLaserCooldown == 0;
+		if (IsKeyDown(KEY_SPACE) && CanFire)
+		{
+			currLaserCooldown = maxLaserCooldown;
 			playerLasers.emplace_back(position, true);
 		}
+	}
+
+	void Render(const Texture2D& texture) const noexcept override
+	{
+		const int spriteSquareSide = texture.height;
+		const Rectangle source = { activeTexture * spriteSquareSide, 0, spriteSquareSide, spriteSquareSide };
+		const Rectangle dest = {
+			position.x,
+			position.y,
+			spriteSquareSide* renderScale,
+			spriteSquareSide* renderScale,
+		};
+		const Vector2 origin = {
+			spriteSquareSide * 0.5f * renderScale,
+			spriteSquareSide * 0.5f * renderScale
+		};
+		DrawTexturePro(texture, source, dest, origin, 0, WHITE);
 	}
 };

@@ -24,10 +24,6 @@ static void DrawTextureQuick(const Texture2D& texture, Vector2 position, float s
 		WHITE);
 }
 
-static void DrawTextureQuick(const Texture2D& texture, const Vector2& position) noexcept
-{
-	DrawTextureQuick(texture, position, 1.f);
-}
 
 //This Struct is very similar to the Rectangle class present in raylib.
 //However, given a lot of the code utilizes vector2's, the usage of the rectangle class forces
