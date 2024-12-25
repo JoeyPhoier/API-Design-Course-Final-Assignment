@@ -6,7 +6,7 @@ void Projectile::Update()
 	position.y += (playerProjectile) ? -speed : +speed;
 
 	const auto BottomEdge = static_cast<float>(GetScreenHeight());
-	if (bool isOutOfBounds = position.y < 0 || position.y > BottomEdge)
+	if (const bool isOutOfBounds = position.y < 0 || position.y > BottomEdge)
 	{
 		Destroy();
 	}

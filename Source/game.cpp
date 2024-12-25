@@ -106,10 +106,13 @@ void Game::Update()
 		//TODO: Replace with a for range loop or an algo.
 		//Update Aliens and Check if they are past player
 		alienArmy.Update();
-		/*if (alienArmy.alienSpan[i].position.y > GetScreenHeight() - player.radius)
+		for (const Alien& alien : alienArmy.alienSpan)
 		{
-			End();
-		}*/
+			if (alien.position.y > GetScreenHeight() - player.radius)
+			{
+				End();
+			}
+		}
 
 		//TODO: This should probably be processed when the player takes damage, not every frame.
 		//End game if player dies

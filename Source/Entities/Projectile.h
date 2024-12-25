@@ -14,7 +14,7 @@ public:
 	bool playerProjectile = true;
 
 	Projectile() = default;
-	Projectile(Vector2 spawnPoint, bool wasFiredByPlayer) : position(spawnPoint), playerProjectile(wasFiredByPlayer)
+	Projectile(Vector2 spawnPoint, bool wasFiredByPlayer) noexcept : position(spawnPoint), playerProjectile(wasFiredByPlayer)
 	{};
 
 	[[nodiscard]] bool IsAlive() const noexcept
