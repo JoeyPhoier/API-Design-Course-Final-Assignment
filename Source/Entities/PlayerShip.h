@@ -1,6 +1,8 @@
 #pragma once
 #include "raylib.h"
 #include "BaseEntity.h"
+#include "Projectile.h"
+#include <vector>
 
 class PlayerShip final : public BaseEntity
 {
@@ -49,7 +51,6 @@ public:
 		}
 
 		position.x += speed * direction;
-
 		const float RightEdge = static_cast<float>(GetScreenWidth()) - radius;
 		if (position.x < 0 + radius)
 		{
@@ -73,6 +74,16 @@ public:
 		{
 			activeTexture++;
 			timer = 0;
+		}
+
+	}
+
+	void CheckForLaserInput(std::vector<Projectile>& playerLasers)
+	{
+		if (IsKeyPressed(KEY_SPACE))
+		{
+			//newProjectile.position.y = window_height - 130;
+			playerLasers.emplace_back(position, true);
 		}
 	}
 };
