@@ -13,7 +13,8 @@ enum class State
 {
 	STARTSCREEN,
 	GAMEPLAY,
-	ENDSCREEN
+	INPUTNAME,
+	LEADERBOARD
 };
 
 //TODO: Should be moved to a highscore specific header.
@@ -28,44 +29,14 @@ struct Game
 	State gameState = State::STARTSCREEN;
 
 	int score = 0;
-
-	//Aliens stuff? (idk cause liv wrote this)
-	Rectangle rec = { 0, 0 ,0 ,0 }; 
-
-
-	//TODO: What is this.
-	int formationX = 100;
-	int formationY = 50;
-
-	//TODO: Is this necessary?
-	bool newHighScore = false;
-	
-
-	void Start();
-	void End();
-
-	void Continue();
-
-	void Update();
-	void CollisionChecks() noexcept;
-	void CleanUpDeadEntities() noexcept;
-	void Render();
-
-	bool CheckCollision(Vector2 circlePos, float circleRadius, Vector2 lineTop, Vector2 lineBottom);
-
-	bool CheckNewHighScore();
-
-	void InsertNewHighScore(std::string name);
-
-	void LoadLeaderboard();
-	void SaveLeaderboard();
+	std::vector<PlayerData> Leaderboard = { {"Player 1", 500}, {"Player 2", 400}, {"Player 3", 300}, {"Player 4", 200}, {"Player 5", 100} };
 
 	//Entities
 	PlayerShip player;
 	AlienArmy alienArmy;
 	std::vector<Projectile> playerLasers;
 	std::vector<Barrier> Barriers;
-	int wallCount = 5;
+	static constexpr int wallCount = 5;
 	Vector2 backgroundPos;
 
 	//Textures
@@ -75,18 +46,37 @@ struct Game
 	MyTexture2D BarrierTexture = MyTexture2D("./Assets/Barrier.png");
 	MyTexture2D backgroundTexture = MyTexture2D("./Assets/Space Background.png");
 
-	std::vector<PlayerData> Leaderboard = { {"Player 1", 500}, {"Player 2", 400}, {"Player 3", 300}, {"Player 4", 200}, {"Player 5", 100} };
-
 	//TODO: Theres probably a better way to do this
 	//TEXTBOX ENTER
-	char name[9 + 1] = "\0";      //One extra space required for null terminator char '\0'
+	std::string playerName = "";
 	int letterCount = 0;
 
 	Rectangle textBox = { 600, 500, 225, 50 };
-	bool mouseOnText = false;
+	static constexpr int maxCharactersOnName = 8;
+	bool textBoxSelected = false;
+	float textBoxRenderTimer = 0;
 
-	//TODO: What is this being used for? Doesnt seem necessary.
-	int framesCounter = 0;
+	void Start();
+	void End();
+
+	void Continue();
+
+	void Update();
+	void CollisionChecks() noexcept;
+	void CleanUpDeadEntities() noexcept;
+	void UpdateNameTextBox() noexcept;
+
+	void Render();
+	void RenderTextBox() const noexcept;
+	void RenderLeaderboardData() const noexcept;
+
+	bool CheckCollisions(Vector2 circlePos, float circleRadius, Vector2 lineTop, Vector2 lineBottom);
+
+	bool CanScoreGoOnLeaderboard() const noexcept;
+	void InsertNewHighScore(std::string_view name) noexcept;
+
+	void LoadLeaderboard();
+	void SaveLeaderboard();
 };
 
 template <typename T>

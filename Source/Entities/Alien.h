@@ -33,6 +33,12 @@ public:
 	std::vector<Alien> alienSpan;
 	std::vector<Projectile> alienLasers;
 
+	void Clear() noexcept
+	{
+		alienSpan.clear();
+		alienLasers.clear();
+	}
+
 	AlienArmy() = default;
 	explicit AlienArmy(Vector2 spawnPoint) noexcept : position(spawnPoint) {};
 

@@ -60,21 +60,38 @@ void Game::Start()
 	gameState = State::GAMEPLAY;
 }
 
+bool Game::CanScoreGoOnLeaderboard() const noexcept
+{
+	return (Leaderboard.size() < 5 ||
+			score > Leaderboard.back().score);
+}
+
 void Game::End()
 {
-	//SAVE SCORE AND UPDATE SCOREBOARD
 	playerLasers.clear();
 	Barriers.clear();
-	alienArmy.alienSpan.clear();
-	alienArmy.alienLasers.clear();
-	newHighScore = CheckNewHighScore();
-	gameState = State::ENDSCREEN;
+	alienArmy.Clear();
+
+	if (CanScoreGoOnLeaderboard())
+	{
+		gameState = State::INPUTNAME;
+	}
+	else
+	{
+		gameState = State::LEADERBOARD;
+	}
 }
 
 void Game::Continue()
 {
 	SaveLeaderboard();
 	gameState = State::STARTSCREEN;
+}
+
+bool FixedCheckCollisionPointRec(const Vector2& point,Rectangle rectangle) noexcept
+{
+	rectangle.y -= rectangle.height * .5f;
+	return CheckCollisionPointRec(point, rectangle);
 }
 
 void Game::Update()
@@ -110,75 +127,35 @@ void Game::Update()
 		CollisionChecks();
 		CleanUpDeadEntities();
 	break;
-	case State::ENDSCREEN:
-		//Code
-	
-		//Exit endscreen
-		if (IsKeyPressed(KEY_ENTER) && !newHighScore)
+	case State::INPUTNAME:
+	{
+		//This is required due to a raylib bug in the CheckCollisionPointRec
+		
+		if (const bool IsMouseOnTextBox = FixedCheckCollisionPointRec(GetMousePosition(), textBox))
 		{
-			//TODO: Add an early exit
-			Continue();
+			SetMouseCursor(MOUSE_CURSOR_IBEAM);
+			if (IsMouseButtonPressed(0))
+			{
+				textBoxSelected = true;
+			}
 		}
-	
-		//TODO: Make the check for newHighScore. Rn its done elsewhere, which it shouldnt be.
-		if (newHighScore)
+		else
 		{
-			//TODO: Throw cursor changing into its own function.
-
-			if (CheckCollisionPointRec(GetMousePosition(), textBox)) mouseOnText = true;
-			else mouseOnText = false;
-
-			if (mouseOnText)
+			SetMouseCursor(MOUSE_CURSOR_DEFAULT);
+			if (IsMouseButtonPressed(0))
 			{
-				// Set the window's cursor to the I-Beam
-				SetMouseCursor(MOUSE_CURSOR_IBEAM);
-
-				// Get char pressed on the queue
-				int key = GetCharPressed();
-
-				// Check if more characters have been pressed on the same frame
-				while (key > 0)
-				{
-					// NOTE: Only allow keys in range [32..125]
-					if ((key >= 32) && (key <= 125) && (letterCount < 9))
-					{
-						name[letterCount] = (char)key;
-						name[letterCount + 1] = '\0'; // Add null terminator at the end of the string.
-						letterCount++;
-					}
-
-					key = GetCharPressed();  // Check next character in the queue
-				}
-
-				//Remove chars 
-				if (IsKeyPressed(KEY_BACKSPACE))
-				{
-					letterCount--;
-					if (letterCount < 0) letterCount = 0;
-					name[letterCount] = '\0';
-				}
+				textBoxSelected = false;
+				textBoxRenderTimer = 0;
 			}
-			else SetMouseCursor(MOUSE_CURSOR_DEFAULT);
-
-			if (mouseOnText)
-			{
-				framesCounter++;
-			}
-			else
-			{
-				framesCounter = 0;
-			}
-
-			// If the name is right legth and enter is pressed, exit screen by setting highscore to false and add 
-			// name + score to scoreboard
-			if (letterCount > 0 && letterCount < 9 && IsKeyPressed(KEY_ENTER))
-			{
-				std::string nameEntry(name);
-
-				InsertNewHighScore(nameEntry);
-
-				newHighScore = false;
-			}
+		}
+		UpdateNameTextBox();
+	}
+		break;
+	case State::LEADERBOARD:
+		if (IsKeyPressed(KEY_ENTER))
+		{
+			//TODO: Make a proper restart game func
+			Continue();
 		}
 		break;
 	default:
@@ -227,135 +204,119 @@ void Game::CleanUpDeadEntities() noexcept
 	std::erase_if(alienArmy.alienLasers, IsEntityDead);
 }
 
+void Game::UpdateNameTextBox() noexcept
+{
+	if (!textBoxSelected)
+	{
+		return;
+	}
+
+	textBoxRenderTimer += GetFrameTime();
+	if (textBoxRenderTimer > 2)
+	{
+		textBoxRenderTimer = 0;
+	}
+
+	int key = GetCharPressed();
+	auto ShouldPerformKeyCheck = [&]()
+		{
+			const bool WasAKeyPressed = key > 0;
+			const bool IsThereSpace = playerName.size() < maxCharactersOnName;
+			return WasAKeyPressed && IsThereSpace;
+		};
+
+	while (ShouldPerformKeyCheck())
+	{
+		if (const bool IsKeyValidCharacter = (key >= 32) && (key <= 125))
+		{
+			playerName += static_cast<char>(key);
+		}
+		key = GetCharPressed();  // Check next character in the queue
+	}
+	if (IsKeyPressed(KEY_BACKSPACE) && playerName.size() > 0)
+	{
+		playerName.pop_back();
+	}
+
+	if (IsKeyPressed(KEY_ENTER) && playerName.size() > 0)
+	{
+		InsertNewHighScore(playerName);
+	}
+}
 
 void Game::Render()
 {
 	switch (gameState)
 	{
 	case State::STARTSCREEN:
-		//TODO: Create a shorthand for this
 		DrawText("SPACE INVADERS", 200, 100, 160, YELLOW);
 		DrawText("PRESS SPACE TO BEGIN", 200, 350, 40, YELLOW);
 		break;
 	case State::GAMEPLAY:
 		DrawTextureQuick(backgroundTexture.get(), backgroundPos, 1.1f);
-		std::ranges::for_each(playerLasers, [&](const Projectile& laser)
-							  {
-								  laser.Render(ProjectileTexture);
-							  });
-		std::ranges::for_each(Barriers, [&](const Barrier& barrier)
-							  {
-								  barrier.Render(BarrierTexture);
-							  });
+		std::ranges::for_each(playerLasers, [&](const Projectile& laser) { laser.Render(ProjectileTexture); });
+		std::ranges::for_each(Barriers, [&](const Barrier& barrier) { barrier.Render(BarrierTexture); });
 		player.Render(playerTexture);
 		alienArmy.Render(AlienTexture, ProjectileTexture);
 
 		DrawText(std::format("Score: {}", score).c_str(), 50, 20, 40, YELLOW);
 		DrawText(std::format("Lives: {}", player.currHealth).c_str(), 50, 70, 40, YELLOW);
 		break;
-	case State::ENDSCREEN:
-		//Code
-		//DrawText("END", 50, 50, 40, YELLOW);
-
-		if (newHighScore)
-		{
-			DrawText("NEW HIGHSCORE!", 600, 300, 60, YELLOW);
-
-			// BELOW CODE IS FOR NAME INPUT RENDER
-			DrawText("PLACE MOUSE OVER INPUT BOX!", 600, 400, 20, YELLOW);
-
-			DrawRectangleRec(textBox, LIGHTGRAY);
-			if (mouseOnText)
-			{
-				// HOVER CONFIRMIATION
-				DrawRectangleLines((int)textBox.x, (int)textBox.y, (int)textBox.width, (int)textBox.height, RED);
-			}
-			else
-			{
-				DrawRectangleLines((int)textBox.x, (int)textBox.y, (int)textBox.width, (int)textBox.height, DARKGRAY);
-			}
-
-			//Draw the name being typed out
-			DrawText(name, (int)textBox.x + 5, (int)textBox.y + 8, 40, MAROON);
-
-			//Draw the text explaining how many characters are used
-			DrawText(TextFormat("INPUT CHARS: %i/%i", letterCount, 8), 600, 600, 20, YELLOW);
-
-			//TODO: Another mouseontext check? They should be handled in the same thing.
-			if (mouseOnText)
-			{
-				if (letterCount < 9)
-				{
-					// Draw blinking underscore char
-					if (((framesCounter / 20) % 2) == 0)
-					{
-						DrawText("_", (int)textBox.x + 8 + MeasureText(name, 40), (int)textBox.y + 12, 40, MAROON);
-					}
-				}
-				else
-				{
-					//Name needs to be shorter
-					DrawText("Press BACKSPACE to delete chars...", 600, 650, 20, YELLOW);
-				}
-			}
-
-			// Explain how to continue when name is input
-			if (letterCount > 0 && letterCount < 9)
-			{
-				DrawText("PRESS ENTER TO CONTINUE", 600, 800, 40, YELLOW);
-			}
-		}
-		else {
-			// If no highscore or name is entered, show scoreboard and call it a day
-			DrawText("PRESS ENTER TO CONTINUE", 600, 200, 40, YELLOW);
-
-			DrawText("LEADERBOARD", 50, 100, 40, YELLOW);
-
-			for (int i = 0; i < Leaderboard.size(); i++)
-			{
-				//TODO: Get rid of draw pointer interpretation, or throw it in a wrapper func.
-				char* tempNameDisplay = Leaderboard[i].name.data();
-				DrawText(tempNameDisplay, 50, 140 + (i * 40), 40, YELLOW);
-				DrawText(TextFormat("%i", Leaderboard[i].score), 350, 140 + (i * 40), 40, YELLOW);
-			}
-		}
+	case State::INPUTNAME:
+	{
+		RenderTextBox();
+		DrawText((playerName.size() > 0) ? "PRESS ENTER TO CONTINUE" : "PLEASE INSERT A NAME",
+				 600, 800, 40, YELLOW);
+		DrawText("NEW HIGHSCORE!", 600, 300, 60, YELLOW);
+		DrawText("PLACE MOUSE OVER INPUT BOX!", 600, 400, 20, YELLOW);
+	}
+		break;
+	case State::LEADERBOARD:
+		DrawText("PRESS ENTER TO CONTINUE", 600, 200, 40, YELLOW);
+		DrawText("LEADERBOARD", 50, 100, 40, YELLOW);
+		RenderLeaderboardData();
 		break;
 	default:
-		//SHOULD NOT HAPPEN
 		break;
 	}
 }
 
-bool Game::CheckNewHighScore()
+void Game::RenderTextBox() const noexcept
 {
-	if (score > Leaderboard[4].score)
+	const int textBoxThickness = 3;
+	DrawRectangleRec(textBox, LIGHTGRAY);
+	DrawRectangleLinesEx(textBox, textBoxThickness, textBoxSelected ? RED : DARKGRAY);
+
+	const auto textX = static_cast<int>(textBox.x);
+	const auto textY = static_cast<int>(textBox.y);
+	DrawText(playerName.c_str(), textX + 5, textY + 8, 40, MAROON);
+	DrawText(std::format("INPUT CHARS: {}/{}", playerName.size(), 8).c_str(), 600, 600, 20, YELLOW);
+	if (textBoxSelected && playerName.size() < maxCharactersOnName && textBoxRenderTimer > 1.f)
 	{
-		return true;
+		DrawText("_", textX + maxCharactersOnName + MeasureText(playerName.c_str(), 40), textY + 12, 40, MAROON);
 	}
-	return false;
 }
 
-void Game::InsertNewHighScore(std::string name)
+void Game::RenderLeaderboardData() const noexcept
 {
-	PlayerData newData;
-	newData.name = name;
-	newData.score = score;
-	
-	//TODO: Maybe replace this with some sort of algo for sorting? Then again, we know its sorted, we just need to insert one new element.
-	// Having an actual sort makes sure that it will always be sorted - if for some reason it gets unsorted, this would never resort it without the sort.
-	for (int i = 0; i < Leaderboard.size(); i++)
+	int yOffset = 0;
+	for (const auto& data : Leaderboard)
 	{
-		if (newData.score > Leaderboard[i].score)
-		{
-
-			Leaderboard.insert(Leaderboard.begin() + i, newData);
-
-			Leaderboard.pop_back();
-
-			i = Leaderboard.size();
-
-		}
+		DrawText(data.name.c_str(), 50, 140 + yOffset, 40, YELLOW);
+		DrawText(std::format("{}", data.score).c_str(), 350, 140 + yOffset, 40, YELLOW);
+		yOffset += 40;
 	}
+}
+
+void Game::InsertNewHighScore(std::string_view name) noexcept
+{
+	Leaderboard.emplace_back(name.data(), score);
+	std::ranges::sort(Leaderboard, [&](const PlayerData& a, const PlayerData& b){ return a.score > b.score; });
+	if (Leaderboard.size() > 5)
+	{
+		Leaderboard.pop_back();
+	}
+	gameState = State::LEADERBOARD;
 }
 
 void Game::LoadLeaderboard()
@@ -400,7 +361,7 @@ void Game::SaveLeaderboard()
 }
 
 
-bool Game::CheckCollision(Vector2 circlePos, float circleRadius, Vector2 lineStart, Vector2 lineEnd)
+bool Game::CheckCollisions(Vector2 circlePos, float circleRadius, Vector2 lineStart, Vector2 lineEnd)
 {
 	//TODO: This whole function should probably be rewritten. For our purposes, we only need to do compare two circles
 
