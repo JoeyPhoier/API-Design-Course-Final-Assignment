@@ -40,12 +40,8 @@ int main(void)
 
     SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
 
-    //TODO: Game should always start in the startscreen, no sense in requiring it for the constructor.
-    Game game = { State::STARTSCREEN };
-    //TODO: These should not have to be instantiated individually
+    Game game;
     
-    //--------------------------------------------------------------------------------------
-
     //TODO: Move to constructor
     InitAudioDevice();
 
@@ -53,40 +49,7 @@ int main(void)
     auto sound = LoadSound("./hitHurt.ogg");
 
     // Main game loop
-    while (!WindowShouldClose())    // Detect window close button or ESC key
-    {
-        // Update
-        //----------------------------------------------------------------------------------
-        // TODO: Update your variables here
-        //----------------------------------------------------------------------------------
-
-        //if (IsKeyPressed(KEY_SPACE))
-        //{
-        //    PlaySound(sound);
-        //}
-
-        //if (IsKeyPressed(KEY_BACKSPACE))
-        //{
-        //    StopSound(sound);
-        //}
-
-    //TODO: This whole loop should be thrown into its own function.
-        game.Update();
-      
-
-        // Draw
-        //----------------------------------------------------------------------------------
-        BeginDrawing();
-
-        ClearBackground(BLACK);
-
-       
-
-        game.Render();
-
-        EndDrawing();
-        //----------------------------------------------------------------------------------
-    }
+    game.Loop();
 
     //TODO: Move to Destructor
     CloseAudioDevice();

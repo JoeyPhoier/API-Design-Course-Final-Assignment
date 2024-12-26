@@ -17,10 +17,30 @@ enum class State
 	ENDSCREEN
 };
 
-struct Game
+class Background final
+{
+	Vector2 position = { 0,0 };
+	static constexpr float renderScale = 1.1f;
+public:
+	void Reset() noexcept
+	{
+		position.y = static_cast<float>(GetScreenHeight()) * .5f;
+	}
+	void Update(Vector2 playerPosition) noexcept
+	{
+		position.x = (static_cast<float>(GetScreenWidth()) * .5f) - (playerPosition.x / 15);
+	}
+	void Render(const Texture2D& texture) const noexcept
+	{
+		DrawTextureQuick(texture, position, renderScale);
+	}
+};
+
+class Game final
 {
 	State gameState = State::STARTSCREEN;
 
+	Leaderboard leaderboard;
 	int score = 0;
 
 	//Entities
@@ -28,8 +48,8 @@ struct Game
 	AlienArmy alienArmy;
 	std::vector<Projectile> playerLasers;
 	std::vector<Barrier> barriers;
-	static constexpr int wallCount = 5;
-	Vector2 backgroundPos;
+	static constexpr int barrierCount = 5;
+	Background background;
 
 	//Textures
 	MyTexture2D playerTexture = MyTexture2D("./Assets/PlayerShip.png");
@@ -38,18 +58,17 @@ struct Game
 	MyTexture2D barrierTexture = MyTexture2D("./Assets/Barrier.png");
 	MyTexture2D backgroundTexture = MyTexture2D("./Assets/Space Background.png");
 
-	Leaderboard leaderboard;
-
-	void Start();
-	void End();
-
-	void Continue();
+	void StartGameplay();
+	void EndGameplay() noexcept;
 
 	void Update();
 	void CollisionChecks() noexcept;
 	void CleanUpDeadEntities() noexcept;
 
 	void Render();
+
+public:
+	void Loop();
 };
 
 template <typename T>

@@ -1,78 +1,41 @@
 #include "game.h"
 #include <iostream>
-#include <vector>
 #include <chrono>
-#include <thread>
 #include "RayUtils.h"
 #include "Collision.h"
 #include <algorithm>
 #include <functional>
 #include <format>
 
-// MATH FUNCTIONS
-float lineLength(Vector2 A, Vector2 B) //Uses pythagoras to calculate the length of a line
+void ResetBarriers(std::vector<Barrier>& barrierVector, int barrierCount)
 {
-	float length = sqrtf(pow(B.x - A.x, 2) + pow(B.y - A.y, 2));
-
-	return length;
-}
-
-bool pointInCircle(Vector2 circlePos, float radius, Vector2 point) // Uses pythagoras to calculate if a point is within a circle or not
-{
-	float distanceToCentre = lineLength(circlePos, point);
-
-	if (distanceToCentre < radius)
+	const float wallSpacing = static_cast<float>(GetScreenWidth()) / (barrierCount + 1);
+	const float wallHeight = static_cast<float>(GetScreenHeight()) - 250;
+	for (int i = 1; i <= barrierCount; i++)
 	{
-		return true;
-	}
-	else
-	{
-		return false;
+		barrierVector.emplace_back(Vector2{ wallSpacing * i , wallHeight });
 	}
 }
 
-
-void Game::Start()
+void Game::StartGameplay()
 {
-	// creating walls 
-	float window_width = (float)GetScreenWidth(); 
-	float window_height = (float)GetScreenHeight(); 
-	float wall_distance = window_width / (wallCount + 1); 
-	for (int i = 0; i < wallCount; i++)
-	{
-		barriers.emplace_back(Vector2{ wall_distance * (i + 1) ,
-									   window_height - 250 });
-	}
-
-	//creating player
-	PlayerShip newPlayer;
-	player = newPlayer;
-
-	//creating aliens
-	alienArmy.ResetArmy();
-
-	//reset score
 	score = 0;
 
-	backgroundPos.y = window_height * .5f;
-
+	player.Reset();
+	alienArmy.ResetArmy();
+	ResetBarriers(barriers, barrierCount);
+	background.Reset();
 	gameState = State::GAMEPLAY;
 }
 
-void Game::End()
+void Game::EndGameplay() noexcept
 {
+	alienArmy.Clear();
 	playerLasers.clear();
 	barriers.clear();
-	alienArmy.Clear();
 
 	leaderboard.PrepareLeaderboard(score);
 	gameState = State::ENDSCREEN;
-}
-
-void Game::Continue()
-{
-	//TODO: Reset
-	gameState = State::STARTSCREEN;
 }
 
 void Game::Update()
@@ -80,31 +43,27 @@ void Game::Update()
 	switch (gameState)
 	{
 	case State::STARTSCREEN:
-		//Code 
-		//TODO: replace all usages of keyReleased with keydown.
 		if (IsKeyPressed(KEY_SPACE))
 		{
-			Start();
+			StartGameplay();
 		}
-
 		break;
 	case State::GAMEPLAY:
-		//Code
 		if (IsKeyPressed(KEY_Q))
 		{
-			End();
+			EndGameplay();
 		}
 
 		player.Update();
 		player.CheckForLaserInput(playerLasers);
-		backgroundPos.x = (static_cast<float>(GetScreenWidth()) * .5f) - (player.position.x / 15);
 		std::ranges::for_each(playerLasers, std::mem_fn(&Projectile::Update));
 		alienArmy.Update();
 		if (alienArmy.HasAlienReachedPlayer(player.position, player.radius))
 		{
-			End();
+			EndGameplay();
 		}
-		
+		background.Update(player.position);
+
 		CollisionChecks();
 		CleanUpDeadEntities();
 	break;
@@ -112,8 +71,7 @@ void Game::Update()
 		leaderboard.Update(score);
 		if (leaderboard.CanExitLeaderboard())
 		{
-			//TODO: Make a proper restart game func
-			Continue();
+			gameState = State::STARTSCREEN;
 		}
 		break;
 	default:
@@ -144,14 +102,12 @@ void Game::CollisionChecks() noexcept
 
 void Game::CleanUpDeadEntities() noexcept
 {
-	//End game if player dies
 	if (!player.IsAlive())
 	{
-		End();
+		EndGameplay();
 		return;
 	}
 
-	// REMOVE INACTIVE/DEAD ENITITIES
 	auto IsEntityDead = [&](const BaseEntity& entity) noexcept
 		{
 			return !entity.IsAlive();
@@ -171,7 +127,7 @@ void Game::Render()
 		DrawText("PRESS SPACE TO BEGIN", 200, 350, 40, YELLOW);
 		break;
 	case State::GAMEPLAY:
-		DrawTextureQuick(backgroundTexture.get(), backgroundPos, 1.1f);
+		background.Render(backgroundTexture);
 		std::ranges::for_each(playerLasers, [&](const Projectile& laser) { laser.Render(projectileTexture); });
 		std::ranges::for_each(barriers, [&](const Barrier& barrier) { barrier.Render(barrierTexture); });
 		player.Render(playerTexture);
@@ -185,5 +141,18 @@ void Game::Render()
 		break;
 	default:
 		break;
+	}
+}
+
+void Game::Loop()
+{
+	while (!WindowShouldClose())    // Detect window close button or ESC key
+	{
+		Update();
+	
+		BeginDrawing();
+		ClearBackground(BLACK);
+		Render();
+		EndDrawing();
 	}
 }

@@ -24,9 +24,17 @@ public:
 
 	PlayerShip() noexcept
 	{
+		Reset();
+	}
+
+	void Reset() noexcept
+	{
 		const auto HalfWidth = static_cast<float>(GetScreenWidth()) * .5f;
 		const auto PlayerHeight = static_cast<float>(GetScreenHeight()) - (radius * 2);
 		position = { HalfWidth,PlayerHeight };
+
+		currHealth = maxHealth;
+		currLaserCooldown = 0;
 	}
 
 	void Damage() noexcept override
