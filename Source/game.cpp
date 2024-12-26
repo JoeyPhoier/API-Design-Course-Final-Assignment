@@ -127,11 +127,11 @@ void Game::Render()
 		DrawText("PRESS SPACE TO BEGIN", 200, 350, 40, YELLOW);
 		break;
 	case State::GAMEPLAY:
-		background.Render(backgroundTexture);
-		std::ranges::for_each(playerLasers, [&](const Projectile& laser) { laser.Render(projectileTexture); });
-		std::ranges::for_each(barriers, [&](const Barrier& barrier) { barrier.Render(barrierTexture); });
-		player.Render(playerTexture);
-		alienArmy.Render(alienTexture, projectileTexture);
+		background.Render(textures.backgroundTexture);
+		std::ranges::for_each(playerLasers, [&](const Projectile& laser) { laser.Render(textures.projectileTexture); });
+		std::ranges::for_each(barriers, [&](const Barrier& barrier) { barrier.Render(textures.barrierTexture); });
+		player.Render(textures.playerTexture);
+		alienArmy.Render(textures.alienTexture, textures.projectileTexture);
 
 		DrawText(std::format("Score: {}", score).c_str(), 50, 20, 40, YELLOW);
 		DrawText(std::format("Lives: {}", player.currHealth).c_str(), 50, 70, 40, YELLOW);

@@ -30,34 +30,12 @@
 //------------------------------------------------------------------------------------
 int main(void)
 {    
-    // Initialization
-    //--------------------------------------------------------------------------------------
-    const int screenWidth = 1920;
-    const int screenHeight = 1080;
-
-    //TODO: Move this to a constructor
-    InitWindow(screenWidth, screenHeight, "SPACE INVADERS");
-
-    SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
-
     Game game;
-    
-    //TODO: Move to constructor
-    InitAudioDevice();
+    SetTargetFPS(60);
 
     //TODO: Move to a RAII class that throws.
     auto sound = LoadSound("./hitHurt.ogg");
-
-    // Main game loop
     game.Loop();
-
-    //TODO: Move to Destructor
-    CloseAudioDevice();
-    
-    // De-Initialization
-    //--------------------------------------------------------------------------------------
-    CloseWindow();        // Close window and OpenGL context
-    //--------------------------------------------------------------------------------------
 
     //TODO: What is this doing here?
     std::string filename = "level.txt";
