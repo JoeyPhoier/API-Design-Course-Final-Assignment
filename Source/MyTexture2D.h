@@ -27,14 +27,8 @@ public:
 	MyTexture2D operator=(const MyTexture2D& other) = delete;
 
 	//Class must be move insertable in order to be emplace constructable 
-	MyTexture2D(MyTexture2D&& other) noexcept
-	{
-		std::swap(texture, other.texture);
-	}
-	MyTexture2D operator=(MyTexture2D&& other) noexcept
-	{
-		std::swap(texture, other.texture);
-	}
+	MyTexture2D(MyTexture2D&& other) = delete;
+	MyTexture2D operator=(MyTexture2D&& other) = delete;
 
 	[[nodiscard]] const Texture2D& get() const noexcept
 	{
