@@ -8,7 +8,7 @@
 #include "Barrier.h"
 #include "Alien.h"
 #include "Leaderboard.h"
-#include "Resources.h"
+#include "Managers.h"
 
 class Background final
 {
@@ -21,7 +21,8 @@ public:
 	}
 	void Update(Vector2 playerPosition) noexcept
 	{
-		position.x = (static_cast<float>(GetScreenWidth()) * .5f) - (playerPosition.x / 15);
+		const float halfScreenWidth = static_cast<float>(GetScreenWidth()) * .5f;
+		position.x = halfScreenWidth - ((playerPosition.x - halfScreenWidth) / 15);
 	}
 	void Render(const Texture2D& texture) const noexcept
 	{
@@ -35,6 +36,7 @@ class Game final
 	std::string windowName = "SPACE INVADERS";
 	WindowManager window = WindowManager(resolution, windowName);
 	AudioManager audio;
+	TextureManager textures;
 
 	enum class State
 	{
@@ -55,19 +57,16 @@ class Game final
 	static constexpr int barrierCount = 5;
 	Background background;
 
-	TextureLibrary textures;
-
-
-	void StartGameplay();
+	void StartGameplay() noexcept;
 	void EndGameplay() noexcept;
 
-	void Update();
+	void Update() noexcept;
 	void CollisionChecks() noexcept;
 	void CleanUpDeadEntities() noexcept;
 
-	void Render();
+	void Render() const noexcept;
 public:
-	void Loop();
+	void Loop() noexcept;
 };
 
 template <typename T>

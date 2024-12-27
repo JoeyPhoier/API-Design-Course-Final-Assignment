@@ -3,7 +3,7 @@
 #include "MyTexture2D.h"
 
 //Textures
-struct TextureLibrary
+struct TextureManager
 {
 	MyTexture2D playerTexture = MyTexture2D("./Assets/PlayerShip.png");
 	MyTexture2D alienTexture = MyTexture2D("./Assets/Alien.png");

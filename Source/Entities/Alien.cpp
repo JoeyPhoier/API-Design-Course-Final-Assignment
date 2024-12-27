@@ -1,7 +1,6 @@
 #include "Alien.h"
 #include "RayUtils.h"
 #include <algorithm>
-#include "Collision.h"'
 #include <functional>
 
 float Alien::speed = 100;

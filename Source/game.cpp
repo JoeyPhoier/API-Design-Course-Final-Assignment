@@ -2,14 +2,15 @@
 #include <iostream>
 #include <chrono>
 #include "RayUtils.h"
-#include "Collision.h"
 #include <algorithm>
 #include <functional>
 #include <format>
+#include "raymath.h"
 
-void ResetBarriers(std::vector<Barrier>& barrierVector, int barrierCount)
+void ResetBarriers(std::vector<Barrier>& barrierVector, int barrierCount) noexcept
 {
-	const float wallSpacing = static_cast<float>(GetScreenWidth()) / (barrierCount + 1);
+	const auto barrierCountf = static_cast<float>(barrierCount + 1);
+	const float wallSpacing = static_cast<float>(GetScreenWidth()) / barrierCountf;
 	const float wallHeight = static_cast<float>(GetScreenHeight()) - 250;
 	for (int i = 1; i <= barrierCount; i++)
 	{
@@ -17,7 +18,7 @@ void ResetBarriers(std::vector<Barrier>& barrierVector, int barrierCount)
 	}
 }
 
-void Game::StartGameplay()
+void Game::StartGameplay() noexcept
 {
 	score = 0;
 
@@ -66,10 +67,10 @@ void Game::Update()
 
 		CollisionChecks();
 		CleanUpDeadEntities();
-	break;
+		break;
 	case State::ENDSCREEN:
 		leaderboard.Update(score);
-		if (leaderboard.CanExitLeaderboard())
+		if (leaderboard.ShouldExitLeaderboard())
 		{
 			gameState = State::STARTSCREEN;
 		}
@@ -118,7 +119,7 @@ void Game::CleanUpDeadEntities() noexcept
 		return;
 	}
 
-	auto IsEntityDead = [&](const BaseEntity& entity) noexcept
+	auto IsEntityDead = [](const BaseEntity& entity) noexcept
 		{
 			return !entity.IsAlive();
 		};
@@ -128,7 +129,7 @@ void Game::CleanUpDeadEntities() noexcept
 	std::erase_if(alienArmy.alienLasers, IsEntityDead);
 }
 
-void Game::Render()
+void Game::Render() const noexcept
 {
 	switch (gameState)
 	{
@@ -138,8 +139,14 @@ void Game::Render()
 		break;
 	case State::GAMEPLAY:
 		background.Render(textures.backgroundTexture);
-		std::ranges::for_each(playerLasers, [&](const Projectile& laser) { laser.Render(textures.projectileTexture); });
-		std::ranges::for_each(barriers, [&](const Barrier& barrier) { barrier.Render(textures.barrierTexture); });
+		std::ranges::for_each(playerLasers, [&](const Projectile& laser)
+							  {
+								  laser.Render(textures.projectileTexture);
+							  });
+		std::ranges::for_each(barriers, [&](const Barrier& barrier)
+							  {
+								  barrier.Render(textures.barrierTexture);
+							  });
 		player.Render(textures.playerTexture);
 		alienArmy.Render(textures.alienTexture, textures.projectileTexture);
 
@@ -154,12 +161,12 @@ void Game::Render()
 	}
 }
 
-void Game::Loop()
+void Game::Loop() noexcept
 {
 	while (!WindowShouldClose())    // Detect window close button or ESC key
 	{
 		Update();
-	
+
 		BeginDrawing();
 		ClearBackground(BLACK);
 		Render();

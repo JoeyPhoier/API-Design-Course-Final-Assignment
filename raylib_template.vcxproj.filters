@@ -19,6 +19,9 @@
     <Filter Include="Header Files\Entities">
       <UniqueIdentifier>{f6b78584-9cf1-4c34-91ab-f29073994de6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Resources">
+      <UniqueIdentifier>{4ff49ac2-f72b-4e80-bf4c-940a4f14962f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\main.cpp">
@@ -37,14 +40,11 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\Entities\PlayerShip.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Entities</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\game.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\MyTexture2D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\RayUtils.h">
@@ -71,8 +71,11 @@
     <ClInclude Include="Source\Leaderboard.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Resources.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="Source\Resources\MyTexture2D.h">
+      <Filter>Header Files\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Resources\Managers.h">
+      <Filter>Header Files\Resources</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

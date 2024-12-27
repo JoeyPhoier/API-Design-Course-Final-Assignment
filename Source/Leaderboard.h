@@ -39,11 +39,11 @@ class Leaderboard
 	}
 public:
 	void PrepareLeaderboard(int score) noexcept;
-	bool CanExitLeaderboard() const noexcept
+	bool ShouldExitLeaderboard() const noexcept
 	{
 		return canExitLeaderboard;
 	}
 
 	void Update(int score) noexcept;
-	void Render() noexcept;
+	void Render() const noexcept;
 };

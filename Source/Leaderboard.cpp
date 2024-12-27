@@ -188,7 +188,7 @@ void Leaderboard::InsertNewHighScore(PlayerData data) noexcept
 	//gameState = State::LEADERBOARD;
 }
 
-void Leaderboard::Render() noexcept
+void Leaderboard::Render() const noexcept
 {
 	if (isInInputNameScreen)
 	{

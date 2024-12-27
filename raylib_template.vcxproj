@@ -81,7 +81,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)Build\$(Configuration)\</OutDir>
     <LibraryPath>$(SolutionDir)External\raylib\lib;$(LibraryPath)</LibraryPath>
-    <IncludePath>$(SolutionDir)Source;$(SolutionDir)Source\Entities;$(SolutionDir)External\raylib\include;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Source;$(SolutionDir)Source\Resources;$(SolutionDir)Source\Entities;$(SolutionDir)External\raylib\include;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
     <IntDir>Build\Intermediate\$(Configuration)\</IntDir>
     <RunCodeAnalysis>false</RunCodeAnalysis>
     <CodeAnalysisRuleSet>CppCoreCheckRules.ruleset</CodeAnalysisRuleSet>
@@ -182,8 +182,8 @@
     <ClInclude Include="Source\Leaderboard.h" />
     <ClInclude Include="Source\level.h" />
     <ClInclude Include="Source\RayUtils.h" />
-    <ClInclude Include="Source\MyTexture2D.h" />
-    <ClInclude Include="Source\Resources.h" />
+    <ClInclude Include="Source\Resources\MyTexture2D.h" />
+    <ClInclude Include="Source\Resources\Managers.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
