@@ -32,7 +32,7 @@ class Leaderboard
 	std::vector<PlayerData> dataTable;
 
 	std::string playerName = "";
-	Rectangle textBox = { 600, 500, 225, 50 };
+	Rectangle textboxRectangle = { 600, 500, 225, 50 };
 	static constexpr int maxCharactersOnName = 8;
 	bool textBoxSelected = false;
 	float textBoxRenderTimer = 0;

@@ -15,6 +15,11 @@ public:
 	{};
 	virtual ~BaseEntity() = default;
 
+	BaseEntity(const BaseEntity& other) = default;
+	BaseEntity& operator=(const BaseEntity& other) = default;
+	BaseEntity(BaseEntity&& other) = default;
+	BaseEntity& operator=(BaseEntity&& other) = default;
+
 	[[nodiscard]] bool IsAlive() const noexcept
 	{
 		return isAlive;

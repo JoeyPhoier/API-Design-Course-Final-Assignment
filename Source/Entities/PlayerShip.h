@@ -22,12 +22,17 @@ public:
 	int currHealth = maxHealth;
 
 	PlayerShip() noexcept { Reset(); };
+	~PlayerShip() override = default;
+	PlayerShip(const PlayerShip& other) = default;
+	PlayerShip& operator=(const PlayerShip& other) = default;
+	PlayerShip(PlayerShip&& other) = default;
+	PlayerShip& operator=(PlayerShip&& other) = default;
+
 	void Reset() noexcept;
 
 	void Damage() noexcept override
 	{
-		--currHealth;
-		if (currHealth <= 0)
+		if (--currHealth <= 0)
 		{
 			isAlive = false;
 		}

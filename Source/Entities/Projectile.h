@@ -10,9 +10,7 @@ public:
 	static constexpr Vector2 size = { 10,10 };
 	bool playerProjectile = true;
 
-	Projectile() = default;
-	Projectile(Vector2 spawnPoint, bool wasFiredByPlayer) noexcept : BaseEntity(spawnPoint), playerProjectile(wasFiredByPlayer)
-	{};
+	Projectile(Vector2 spawnPoint, bool wasFiredByPlayer) noexcept : BaseEntity(spawnPoint), playerProjectile(wasFiredByPlayer) {};
 
 	void Update() noexcept override
 	{

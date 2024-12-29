@@ -14,7 +14,7 @@ public:
 	int radius = 60;
 	int currHealth = maxHealth;
 
-	explicit Barrier(Vector2 spawnPoint) : BaseEntity(spawnPoint) {};
+	explicit Barrier(Vector2 spawnPoint) noexcept : BaseEntity(spawnPoint) {};
 
 	void Damage() noexcept override
 	{
@@ -25,6 +25,7 @@ public:
 		}
 	}
 
+	//Does not require any Updating operations.
 	void Update() noexcept override {};
 	void Render(const Texture2D& texture) const noexcept override
 	{

@@ -27,8 +27,8 @@ public:
 	};
 	WindowManager(const WindowManager& other) = delete;
 	WindowManager operator=(const WindowManager& other) = delete;
-	WindowManager(const WindowManager&& other) = delete;
-	WindowManager operator=(const WindowManager&& other) = delete;
+	WindowManager(WindowManager&& other) = delete;
+	WindowManager operator=(WindowManager&& other) = delete;
 };
 
 //Audio
@@ -45,6 +45,6 @@ public:
 	};
 	AudioManager(const AudioManager& other) = delete;
 	AudioManager operator=(const AudioManager& other) = delete;
-	AudioManager(const AudioManager&& other) = delete;
-	AudioManager operator=(const AudioManager&& other) = delete;
+	AudioManager(AudioManager&& other) = delete;
+	AudioManager operator=(AudioManager&& other) = delete;
 };

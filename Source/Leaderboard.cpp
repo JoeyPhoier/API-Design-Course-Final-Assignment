@@ -76,7 +76,7 @@ void Leaderboard::UpdateTextBoxSelection() noexcept
 		return;
 	}
 
-	textBoxSelected = FixedCheckCollisionPointRec(GetMousePosition(), textBox);
+	textBoxSelected = FixedCheckCollisionPointRec(GetMousePosition(), textboxRectangle);
 	SetMouseCursor(textBoxSelected ? MOUSE_CURSOR_IBEAM : MOUSE_CURSOR_DEFAULT);
 }
 
@@ -130,11 +130,11 @@ void Leaderboard::UpdateNameTextBox(int score) noexcept
 void Leaderboard::RenderTextBox() const noexcept
 {
 	const int textBoxThickness = 3;
-	DrawRectangleRec(textBox, LIGHTGRAY);
-	DrawRectangleLinesEx(textBox, textBoxThickness, textBoxSelected ? RED : DARKGRAY);
+	DrawRectangleRec(textboxRectangle, LIGHTGRAY);
+	DrawRectangleLinesEx(textboxRectangle, textBoxThickness, textBoxSelected ? RED : DARKGRAY);
 
-	const auto textX = static_cast<int>(textBox.x);
-	const auto textY = static_cast<int>(textBox.y);
+	const auto textX = static_cast<int>(textboxRectangle.x);
+	const auto textY = static_cast<int>(textboxRectangle.y);
 	DrawText(playerName.c_str(), textX + 5, textY + 8, 40, MAROON);
 	DrawText(std::format("INPUT CHARS: {}/{}", playerName.size(), 8).c_str(), 600, 600, 20, YELLOW);
 	if (textBoxSelected && playerName.size() < maxCharactersOnName && textBoxRenderTimer > 1.f)
