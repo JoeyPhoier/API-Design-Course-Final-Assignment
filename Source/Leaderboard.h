@@ -1,17 +1,35 @@
 #pragma once 
 #include <string>
 #include <vector>
+#include <iostream>
 #include "raylib.h"
+#include <format>
+#include <sstream>
 
 struct PlayerData
 {
 	std::string name;
 	int score;
+
+	PlayerData(std::string_view namei, int scorei) : name(namei), score(scorei) {};
+	explicit PlayerData(std::string_view textEntry)
+	{
+		std::stringstream ss(textEntry.data());
+		std::getline(ss, name,':');
+		std::string scoreString; 
+		std::getline(ss, scoreString);
+		score = std::stoi(scoreString);
+	}
+
+	friend std::string& operator<<(std::string& output, const PlayerData& data)
+	{
+		return output.append(std::format("{}: {}\n", data.name, data.score));
+	};
 };
 
 class Leaderboard
 {
-	std::vector<PlayerData> dataTable = { {"Player 1", 500}, {"Player 2", 400}, {"Player 3", 300}, {"Player 4", 200}, {"Player 5", 100} };
+	std::vector<PlayerData> dataTable;
 
 	std::string playerName = "";
 	Rectangle textBox = { 600, 500, 225, 50 };
@@ -22,6 +40,8 @@ class Leaderboard
 	bool isInInputNameScreen = true;
 	bool canExitLeaderboard = false;
 
+	void UpdateTextBoxSelection() noexcept;
+	void TextboxWritingInput() noexcept;
 	void UpdateNameTextBox(int score) noexcept;
 
 	void InsertNewHighScore(PlayerData data) noexcept;
@@ -31,12 +51,6 @@ class Leaderboard
 
 	void RenderTextBox() const noexcept;
 	void RenderLeaderboardData() const noexcept;
-
-	bool CanScoreGoOnLeaderboard(int score) const noexcept
-	{
-		return (dataTable.size() < 5 ||
-				score > dataTable.back().score);
-	}
 public:
 	void PrepareLeaderboard(int score) noexcept;
 	bool ShouldExitLeaderboard() const noexcept

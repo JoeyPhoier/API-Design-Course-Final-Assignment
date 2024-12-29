@@ -15,7 +15,7 @@ public:
 	{
 		if (texture.id == 0)
 		{
-			throw(std::runtime_error(std::format("Failed to load Texture at {}.", path)));
+			throw std::runtime_error(std::format("Failed to load Texture at {}.", path));
 		}
 	}
 	~MyTexture2D() noexcept

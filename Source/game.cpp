@@ -39,7 +39,7 @@ void Game::EndGameplay() noexcept
 	gameState = State::ENDSCREEN;
 }
 
-void Game::Update()
+void Game::Update() noexcept
 {
 	switch (gameState)
 	{

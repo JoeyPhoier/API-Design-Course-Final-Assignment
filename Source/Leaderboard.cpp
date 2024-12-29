@@ -13,90 +13,96 @@ bool FixedCheckCollisionPointRec(const Vector2& point, Rectangle rectangle) noex
 
 void Leaderboard::LoadLeaderboard()
 {
-	//TODO: Maybe Implement this?
+	dataTable.clear();
 
-	// CLEAR LEADERBOARD
+	std::ifstream input("Leaderboard.txt");
+	if (input.fail())
+	{
+		return;
+	}
+	std::vector<std::string> entries;
+	std::string line;
+	while (!input.eof())
+	{
+		std::getline(input, line);
+		if (!line.empty())
+		{
+			entries.push_back(line);
+		}
+	}
 
-	// OPEN FILE
-
-	// READ DATA
-
-	// WRITE DATA ONTO LEADERBOARD
-
-	//CLOSE FILE
+	for (const auto& entry : entries)
+	{
+		dataTable.emplace_back(entry);
+	}
 }
 
 void Leaderboard::SaveLeaderboard()
 {
-	// OPEN FILE
-	std::fstream file;
-
-	//TODO: Call close and throw this into a RAII class
-	file.open("Leaderboard");
-
-	if (!file)
-	{
-		std::cout << "file not found \n";
-	}
-	else
-	{
-		std::cout << "file found \n";
-	}
-	// CLEAR FILE
-
-	// WRITE ARRAY DATA INTO FILE
-
-	// CLOSE FILE
+	std::string leaderboardData;
+	auto saveTableEntry = [&](const PlayerData& data)
+		{
+			leaderboardData << data;
+		};
+	std::ranges::for_each(dataTable, saveTableEntry);
+	SaveFileText("Leaderboard.txt", leaderboardData.data());
 }
 
 void Leaderboard::PrepareLeaderboard(int score) noexcept
 {
-	canExitLeaderboard = false;
-	if (CanScoreGoOnLeaderboard(score))
-	{
-		isInInputNameScreen = true;
-	}
-	else
-	{
-		isInInputNameScreen = false;
-	}
+	LoadLeaderboard();
+	const bool isThereSpaceInLeaderboard = dataTable.size() < 5;
+	const bool isScoreGreaterThanLowestEntry = !dataTable.empty() && score > dataTable.back().score;
+
+	isInInputNameScreen = isThereSpaceInLeaderboard || isScoreGreaterThanLowestEntry;
 }
 
 void Leaderboard::Update(int score) noexcept
 {
-	if (!isInInputNameScreen)
+	if (isInInputNameScreen)
 	{
-		if (IsKeyPressed(KEY_ENTER))
-		{
-			canExitLeaderboard = true;
-		}
+		UpdateNameTextBox(score);
+	}
+	else if (IsKeyPressed(KEY_ENTER))
+	{
+		canExitLeaderboard = true;
+	}
+}
+
+void Leaderboard::UpdateTextBoxSelection() noexcept
+{
+	if (!IsMouseButtonPressed(0))
+	{
 		return;
 	}
 
-	UpdateNameTextBox(score);
+	textBoxSelected = FixedCheckCollisionPointRec(GetMousePosition(), textBox);
+	SetMouseCursor(textBoxSelected ? MOUSE_CURSOR_IBEAM : MOUSE_CURSOR_DEFAULT);
 }
 
-//TODO: Shorten to simplify
+void Leaderboard::TextboxWritingInput() noexcept
+{
+	int key = GetCharPressed();
+	auto ShouldPerformKeyCheck = [&]()
+		{
+			const bool WasAKeyPressed = key > 0;
+			const bool IsThereSpace = playerName.size() < maxCharactersOnName;
+			return WasAKeyPressed && IsThereSpace;
+		};
+
+	while (ShouldPerformKeyCheck())
+	{
+		if (const bool IsKeyAValidCharacter = (key >= 32) && (key <= 125))
+		{
+			playerName += static_cast<char>(key);
+		}
+		key = GetCharPressed();  // Check next character in the queue
+	}
+}
+
 void Leaderboard::UpdateNameTextBox(int score) noexcept
 {
-	if (const bool IsMouseOnTextBox = FixedCheckCollisionPointRec(GetMousePosition(), textBox))
-	{
-		SetMouseCursor(MOUSE_CURSOR_IBEAM);
-		if (IsMouseButtonPressed(0))
-		{
-			textBoxSelected = true;
-		}
-	}
-	else
-	{
-		SetMouseCursor(MOUSE_CURSOR_DEFAULT);
-		if (IsMouseButtonPressed(0))
-		{
-			textBoxSelected = false;
-			textBoxRenderTimer = 0;
-		}
-	}
-
+	UpdateTextBoxSelection();
 	if (!textBoxSelected)
 	{
 		return;
@@ -108,28 +114,12 @@ void Leaderboard::UpdateNameTextBox(int score) noexcept
 		textBoxRenderTimer = 0;
 	}
 
-	int key = GetCharPressed();
-	auto ShouldPerformKeyCheck = [&]()
-		{
-			const bool WasAKeyPressed = key > 0;
-			const bool IsThereSpace = playerName.size() < maxCharactersOnName;
-			return WasAKeyPressed && IsThereSpace;
-		};
-
-	while (ShouldPerformKeyCheck())
-	{
-		if (const bool IsKeyValidCharacter = (key >= 32) && (key <= 125))
-		{
-			playerName += static_cast<char>(key);
-		}
-		key = GetCharPressed();  // Check next character in the queue
-	}
+	TextboxWritingInput();
 
 	if (IsKeyPressed(KEY_BACKSPACE) && playerName.size() > 0)
 	{
 		playerName.pop_back();
 	}
-
 	if (IsKeyPressed(KEY_ENTER) && playerName.size() > 0)
 	{
 		InsertNewHighScore({ playerName, score});
@@ -184,8 +174,6 @@ void Leaderboard::InsertNewHighScore(PlayerData data) noexcept
 		dataTable.pop_back();
 	}
 	SaveLeaderboard();
-	//TODO Move to game
-	//gameState = State::LEADERBOARD;
 }
 
 void Leaderboard::Render() const noexcept
@@ -193,6 +181,7 @@ void Leaderboard::Render() const noexcept
 	if (isInInputNameScreen)
 	{
 		RenderTextBox();
+		return;
 	}
 	else
 	{
