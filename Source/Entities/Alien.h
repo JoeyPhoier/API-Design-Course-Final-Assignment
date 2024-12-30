@@ -25,25 +25,25 @@ private:
 	static constexpr float maxLaserCooldown = 2;
 	float currLaserCooldown = maxLaserCooldown;
 
-	static constexpr Vector2 formationSize = { 8,5 };
+	Vector2 formationSize = { 8,5 };
 	static constexpr float alienSpacing = 100;
 public:
-	Vector2 position = { 0, 0 };
 
 	std::vector<Alien> alienSpan;
+	std::vector<Alien*> bottomAlienCollection;
 	std::vector<Projectile> alienLasers;
+
+	AlienArmy() = default;
+	explicit AlienArmy(Vector2 formation) noexcept :formationSize(formation){};
 
 	void Clear() noexcept
 	{
 		alienSpan.clear();
 		alienLasers.clear();
 	}
-
-	AlienArmy() = default;
-	explicit AlienArmy(Vector2 spawnPoint) noexcept : position(spawnPoint) {};
-
 	void ResetArmy() noexcept;
 
+	void UpdateAlienShooting() noexcept;
 	void Update() noexcept;
 	[[nodiscard]] bool HasAlienReachedPlayer(const Vector2& playerPosition, const float playerRadius) const noexcept;
 

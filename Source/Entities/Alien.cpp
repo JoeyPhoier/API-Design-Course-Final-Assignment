@@ -13,15 +13,10 @@ void Alien::Update() noexcept
 	if	(!shouldMoveDownThisFrame)
 	{
 		const auto screenWidth = static_cast<float>(GetScreenWidth());
-		if (position.x >= screenWidth - radius)
+		if ((speed > 0 && position.x >= screenWidth - radius) ||
+			(speed < 0 && position.x <= radius))
 		{
 			shouldMoveDownThisFrame = true;
-			speed = -abs(speed);
-		}
-		else if (position.x <= radius)
-		{
-			shouldMoveDownThisFrame = true;
-			speed = abs(speed);
 		}
 	}
 }
@@ -31,24 +26,54 @@ void AlienArmy::ResetArmy() noexcept
 {
 	alienSpan.clear();
 
-	const Vector2 armySize = { (formationSize.x - 1) * alienSpacing * .5f,
+	const Vector2 armyPixelSize = { (formationSize.x - 1) * alienSpacing * .5f,
 							   (formationSize.y - 1) * alienSpacing * .5f };
 
 	const auto screenWidth = static_cast<float>(GetScreenWidth());
-	position = { screenWidth * .5f,
-				armySize.y + alienSpacing };
+	const Vector2 armyPosition{ screenWidth * .5f,
+								armyPixelSize.y + alienSpacing };
+	const Vector2 firstPos = armyPosition - armyPixelSize;
 
-	const Vector2 firstPos = position - armySize;
-
-	for (float row = 0; row < formationSize.y; ++row)
+	for (int collumn = 0; collumn < formationSize.x; ++collumn)
 	{
-		for (float collumn = 0; collumn < formationSize.x; ++collumn)
+		const float posX = firstPos.x + (collumn * alienSpacing);
+		for (int row = 0; row < formationSize.y; ++row)
 		{
-			alienSpan.emplace_back(Vector2{
-				firstPos.x + (collumn * alienSpacing),
-				firstPos.y + (row * alienSpacing)
-								   });
+			alienSpan.emplace_back(Vector2{ posX, firstPos.y + (row * alienSpacing) });
 		}
+	}
+}
+
+Vector2 GetLowestAlienPositionFromRandomCollum(std::vector<Alien> alienVector)
+{
+	std::vector<Vector2> lowestAlienPosition;
+	for (auto& alien : alienVector)
+	{
+		if (lowestAlienPosition.empty() ||
+			alien.position.x != lowestAlienPosition.back().x)
+		{
+			//Next Collum
+			lowestAlienPosition.emplace_back(alien.position);
+		}
+		else if (alien.position.y > lowestAlienPosition.back().y)
+		{
+			lowestAlienPosition.back() = alien.position;
+		}
+	}
+	return lowestAlienPosition[rand() % lowestAlienPosition.size()];
+}
+
+void AlienArmy::UpdateAlienShooting() noexcept
+{ 
+	currLaserCooldown -= GetFrameTime();
+	if (alienSpan.empty())
+	{
+		return;
+	}
+	if (const bool CanFireLaser = currLaserCooldown <= 0)
+	{
+		currLaserCooldown = maxLaserCooldown;
+		alienLasers.emplace_back(GetLowestAlienPositionFromRandomCollum(alienSpan), false);
 	}
 }
 
@@ -71,21 +96,10 @@ void AlienArmy::Update() noexcept
 								  alien.position.y += 50;
 							  });
 		Alien::shouldMoveDownThisFrame = false;
+		Alien::speed *= -1;
 	}
 
-	currLaserCooldown -= GetFrameTime();
-	if (const bool CanFireLaser = currLaserCooldown <= 0)
-	{
-		currLaserCooldown = maxLaserCooldown;
-
-		int randomAlienIndex = 0;
-		//TODO: Make only the lower aliens shoot
-		if (alienSpan.size() > 1)
-		{
-			randomAlienIndex = rand() % alienSpan.size();
-		}
-		alienLasers.emplace_back(alienSpan[randomAlienIndex].position, false);
-	}
+	UpdateAlienShooting();
 }
 
 bool AlienArmy::HasAlienReachedPlayer(const Vector2& playerPosition, const float playerRadius) const noexcept
