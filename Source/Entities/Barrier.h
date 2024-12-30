@@ -25,8 +25,7 @@ public:
 		}
 	}
 
-	//Does not require any Updating operations.
-	void Update() noexcept override {};
+	void Update() noexcept override { /*Does not require any Updating operations.*/ };
 	void Render(const Texture2D& texture) const noexcept override
 	{
 		BaseEntity::Render(texture);

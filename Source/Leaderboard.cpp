@@ -11,50 +11,52 @@ bool FixedCheckCollisionPointRec(const Vector2& point, Rectangle rectangle) noex
 	return CheckCollisionPointRec(point, rectangle);
 }
 
-void Leaderboard::LoadLeaderboard()
+void Leaderboard::LoadLeaderboard() 
 {
 	dataTable.clear();
 
-	std::ifstream input("Leaderboard.txt");
+	std::ifstream input("Leaderboard.sig", std::ios::binary | std::ios::skipws);
 	if (input.fail())
 	{
 		return;
 	}
-	std::vector<std::string> entries;
-	std::string line;
-	while (!input.eof())
-	{
-		std::getline(input, line);
-		if (!line.empty())
-		{
-			entries.push_back(line);
-		}
-	}
 
-	for (const auto& entry : entries)
+	size_t entryCount;
+	input.read(std::bit_cast<char*>(&entryCount), sizeof(size_t));
+	dataTable.resize(entryCount);
+	for (auto& entry : dataTable)
 	{
-		dataTable.emplace_back(entry);
+		size_t nameSize = 0;
+		input.read(std::bit_cast<char*>(&nameSize), sizeof(nameSize));
+		entry.name.resize(nameSize);
+		input.read(std::bit_cast<char*>(&entry.name.front()), nameSize);
+		input.read(std::bit_cast<char*>(&entry.score), sizeof(unsigned int));
 	}
 }
 
 void Leaderboard::SaveLeaderboard()
 {
-	std::string leaderboardData;
-	auto saveTableEntry = [&](const PlayerData& data)
-		{
-			leaderboardData << data;
-		};
-	std::ranges::for_each(dataTable, saveTableEntry);
-	SaveFileText("Leaderboard.txt", leaderboardData.data());
+	std::ofstream outfile("Leaderboard.sig", std::ios::binary);
+	const size_t entryCount = dataTable.size();
+	outfile.write(std::bit_cast<const char*>(&entryCount), sizeof(size_t));
+	for (const auto& entry : dataTable)
+	{
+		const size_t nameSize = entry.name.size();
+		outfile.write(std::bit_cast<const char*>(&nameSize), sizeof(nameSize));
+		outfile.write(&entry.name.front(), nameSize);
+		outfile.write(std::bit_cast<const char*>(&entry.score), sizeof(unsigned int));
+	}
 }
 
-void Leaderboard::PrepareLeaderboard(int score) noexcept
+void Leaderboard::PrepareLeaderboard(int score)
 {
+	playerName.clear();
 	LoadLeaderboard();
 	const bool isThereSpaceInLeaderboard = dataTable.size() < 5;
 	const bool isScoreGreaterThanLowestEntry = !dataTable.empty() && score > dataTable.back().score;
 
 	isInInputNameScreen = isThereSpaceInLeaderboard || isScoreGreaterThanLowestEntry;
+	canExitLeaderboard = false;
 }
 
 void Leaderboard::Update(int score) noexcept
@@ -136,7 +138,7 @@ void Leaderboard::RenderTextBox() const noexcept
 	const auto textX = static_cast<int>(textboxRectangle.x);
 	const auto textY = static_cast<int>(textboxRectangle.y);
 	DrawText(playerName.c_str(), textX + 5, textY + 8, 40, MAROON);
-	DrawText(std::format("INPUT CHARS: {}/{}", playerName.size(), 8).c_str(), 600, 600, 20, YELLOW);
+	DrawText(std::format("INPUT CHARS: {}/{}", playerName.size(), maxCharactersOnName).c_str(), 600, 600, 20, YELLOW);
 	if (textBoxSelected && playerName.size() < maxCharactersOnName && textBoxRenderTimer > 1.f)
 	{
 		DrawText("_", textX + maxCharactersOnName + MeasureText(playerName.c_str(), 40), textY + 12, 40, MAROON);
@@ -162,7 +164,7 @@ void Leaderboard::RenderLeaderboardData() const noexcept
 	DrawText("LEADERBOARD", 50, 100, 40, YELLOW);
 }
 
-void Leaderboard::InsertNewHighScore(PlayerData data) noexcept
+void Leaderboard::InsertNewHighScore(const PlayerData& data) noexcept
 {
 	dataTable.emplace_back(data);
 	std::ranges::sort(dataTable, [&](const PlayerData& a, const PlayerData& b)

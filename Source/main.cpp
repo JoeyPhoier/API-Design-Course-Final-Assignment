@@ -33,8 +33,6 @@ int main(void)
     Game game;
     SetTargetFPS(60);
 
-    //TODO: Move to a RAII class that throws.
-    auto sound = LoadSound("./hitHurt.ogg");
     game.Loop();
 
     //TODO: What is this doing here?

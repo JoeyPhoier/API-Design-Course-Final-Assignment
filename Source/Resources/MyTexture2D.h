@@ -34,6 +34,6 @@ public:
 	}
 	operator Texture2D() const noexcept
 	{
-		return texture;
+		return get();
 	}
 };

@@ -40,9 +40,9 @@ void AlienArmy::ResetArmy() noexcept
 
 	const Vector2 firstPos = position - armySize;
 
-	for (int row = 0; row < formationSize.y; ++row)
+	for (float row = 0; row < formationSize.y; ++row)
 	{
-		for (int collumn = 0; collumn < formationSize.x; ++collumn)
+		for (float collumn = 0; collumn < formationSize.x; ++collumn)
 		{
 			alienSpan.emplace_back(Vector2{
 				firstPos.x + (collumn * alienSpacing),

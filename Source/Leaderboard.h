@@ -5,35 +5,25 @@
 #include "raylib.h"
 #include <format>
 #include <sstream>
+#include <array>
+
 
 struct PlayerData
 {
 	std::string name;
-	int score;
+	unsigned int score;
 
-	PlayerData(std::string_view namei, int scorei) : name(namei), score(scorei) {};
-	explicit PlayerData(std::string_view textEntry)
-	{
-		std::stringstream ss(textEntry.data());
-		std::getline(ss, name,':');
-		std::string scoreString; 
-		std::getline(ss, scoreString);
-		score = std::stoi(scoreString);
-	}
-
-	friend std::string& operator<<(std::string& output, const PlayerData& data)
-	{
-		return output.append(std::format("{}: {}\n", data.name, data.score));
-	};
+	PlayerData() noexcept = default;
+	PlayerData(std::string_view namei, int scorei) noexcept : name(namei), score(scorei) {};
 };
 
 class Leaderboard
 {
 	std::vector<PlayerData> dataTable;
-
+	
 	std::string playerName = "";
 	Rectangle textboxRectangle = { 600, 500, 225, 50 };
-	static constexpr int maxCharactersOnName = 8;
+	static constexpr int maxCharactersOnName = 3;
 	bool textBoxSelected = false;
 	float textBoxRenderTimer = 0;
 
@@ -44,7 +34,7 @@ class Leaderboard
 	void TextboxWritingInput() noexcept;
 	void UpdateNameTextBox(int score) noexcept;
 
-	void InsertNewHighScore(PlayerData data) noexcept;
+	void InsertNewHighScore(const PlayerData& data) noexcept;
 
 	void LoadLeaderboard();
 	void SaveLeaderboard();
@@ -52,7 +42,7 @@ class Leaderboard
 	void RenderTextBox() const noexcept;
 	void RenderLeaderboardData() const noexcept;
 public:
-	void PrepareLeaderboard(int score) noexcept;
+	void PrepareLeaderboard(int score);
 	bool ShouldExitLeaderboard() const noexcept
 	{
 		return canExitLeaderboard;

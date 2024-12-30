@@ -61,7 +61,7 @@ void PlayerShip::CheckForLaserInput(std::vector<Projectile>& playerLasers) noexc
 
 void PlayerShip::Render(const Texture2D& texture) const noexcept
 {
-	const int spriteSquareSide = texture.height;
+	const auto spriteSquareSide = static_cast<float>(texture.height);
 	const Rectangle source = { activeTexture * spriteSquareSide, 0, spriteSquareSide, spriteSquareSide };
 	const Rectangle dest = {
 		position.x,
