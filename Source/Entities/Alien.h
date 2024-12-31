@@ -15,6 +15,7 @@ private:
 public:
 	static constexpr float radius = 30;
 
+	Alien() noexcept = default;
 	explicit Alien(Vector2 spawnPoint) noexcept : BaseEntity(spawnPoint) {};
 	void Update() noexcept override;
 };
@@ -30,7 +31,6 @@ private:
 public:
 
 	std::vector<Alien> alienSpan;
-	std::vector<Alien*> bottomAlienCollection;
 	std::vector<Projectile> alienLasers;
 
 	AlienArmy() = default;

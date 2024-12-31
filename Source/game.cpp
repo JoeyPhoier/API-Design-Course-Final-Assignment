@@ -6,6 +6,7 @@
 #include <functional>
 #include <format>
 #include "raymath.h"
+#include <fstream>
 
 void ResetBarriers(std::vector<Barrier>& barrierVector, int barrierCount) noexcept
 {
@@ -21,11 +22,18 @@ void ResetBarriers(std::vector<Barrier>& barrierVector, int barrierCount) noexce
 void Game::StartGameplay() noexcept
 {
 	score = 0;
-
-	player.Reset();
-	alienArmy.ResetArmy();
-	ResetBarriers(barriers, barrierCount);
-	background.Reset();
+	if (FileExists("Level.sig"))
+	{
+		LoadLevelFromFile();
+	}
+	else
+	{
+		player.Reset();
+		alienArmy.ResetArmy();
+		ResetBarriers(barriers, defaultBarrierCount);
+		background.Reset();
+		SaveLevelToFile();
+	}
 	gameState = State::GAMEPLAY;
 }
 
@@ -37,6 +45,47 @@ void Game::EndGameplay() noexcept
 
 	leaderboard.PrepareLeaderboard(score);
 	gameState = State::ENDSCREEN;
+}
+
+void Game::LoadLevelFromFile()
+{
+	alienArmy.Clear();
+	barriers.clear();
+
+	std::ifstream inFile("Level.sig", std::ios::binary);
+	if (inFile.fail())
+	{
+		return;
+	}
+	inFile.read(std::bit_cast<char*>(&player), sizeof(PlayerShip));
+	size_t alienCount;
+	inFile.read(std::bit_cast<char*>(&alienCount), sizeof(size_t));
+	alienArmy.alienSpan.resize(alienCount);
+	for (auto& alien : alienArmy.alienSpan)
+	{
+		inFile.read(std::bit_cast<char*>(&alien.position), sizeof(Vector2));
+	}
+	size_t barrierCount;
+	inFile.read(std::bit_cast<char*>(&barrierCount), sizeof(size_t));
+	barriers.resize(barrierCount);
+	inFile.read(std::bit_cast<char*>(&barriers.front()), sizeof(Barrier) * barrierCount);
+	inFile.read(std::bit_cast<char*>(&background), sizeof(Background));
+}
+
+void Game::SaveLevelToFile()
+{
+	std::ofstream outFile("Level.sig", std::ios::binary);
+	outFile.write(std::bit_cast<const char*>(&player), sizeof(player));
+	const size_t alienCount = alienArmy.alienSpan.size();
+	outFile.write(std::bit_cast<const char*>(&alienCount), sizeof(size_t));
+	for (auto& alien : alienArmy.alienSpan)
+	{
+		outFile.write(std::bit_cast<const char*>(&alien.position), sizeof(Vector2));
+	}
+	const size_t barrierCount = barriers.size();
+	outFile.write(std::bit_cast<const char*>(&barrierCount), sizeof(size_t));
+	outFile.write(std::bit_cast<const char*>(&barriers.front()), sizeof(Barrier) * barrierCount);
+	outFile.write(std::bit_cast<const char*>(&background), sizeof(background));
 }
 
 void Game::Update() noexcept

@@ -32,7 +32,7 @@ public:
 	{
 		return texture;
 	}
-	operator Texture2D() const noexcept
+	[[nodiscard]] operator Texture2D() const noexcept
 	{
 		return get();
 	}

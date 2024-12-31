@@ -44,7 +44,7 @@ void AlienArmy::ResetArmy() noexcept
 	}
 }
 
-Vector2 GetLowestAlienPositionFromRandomCollum(std::vector<Alien> alienVector)
+[[nodiscard]] Vector2 GetLowestAlienPositionFromRandomCollum(std::vector<Alien> alienVector)
 {
 	std::vector<Vector2> lowestAlienPosition;
 	for (auto& alien : alienVector)
@@ -60,6 +60,7 @@ Vector2 GetLowestAlienPositionFromRandomCollum(std::vector<Alien> alienVector)
 			lowestAlienPosition.back() = alien.position;
 		}
 	}
+	//TODO: Use std sample
 	return lowestAlienPosition[rand() % lowestAlienPosition.size()];
 }
 

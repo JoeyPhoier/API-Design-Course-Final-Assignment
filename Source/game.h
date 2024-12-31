@@ -54,11 +54,14 @@ class Game final
 	AlienArmy alienArmy;
 	std::vector<Projectile> playerLasers;
 	std::vector<Barrier> barriers;
-	static constexpr int barrierCount = 5;
+	static constexpr int defaultBarrierCount = 5;
 	Background background;
 
 	void StartGameplay() noexcept;
 	void EndGameplay() noexcept;
+
+	void LoadLevelFromFile();
+	void SaveLevelToFile();
 
 	void Update() noexcept;
 	void CollisionChecks() noexcept;

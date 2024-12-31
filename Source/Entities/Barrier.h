@@ -14,6 +14,7 @@ public:
 	int radius = 60;
 	int currHealth = maxHealth;
 
+	Barrier() noexcept = default;
 	explicit Barrier(Vector2 spawnPoint) noexcept : BaseEntity(spawnPoint) {};
 
 	void Damage() noexcept override
