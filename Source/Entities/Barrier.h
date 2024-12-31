@@ -11,7 +11,7 @@ private:
 	static constexpr int textSize = 40;
 	static constexpr Vector2 textOffset = { -21, 10 };
 public:
-	int radius = 60;
+	static constexpr float radius = 60;
 	int currHealth = maxHealth;
 
 	Barrier() noexcept = default;

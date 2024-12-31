@@ -27,7 +27,7 @@ private:
 	static constexpr float maxLaserCooldown = 2;
 	float currLaserCooldown = maxLaserCooldown;
 
-	static constexpr Vector2 formationSize = { 8,5 };
+	static constexpr Vector2Int formationSize = { 8,5 };
 	static constexpr float alienSpacing = 100;
 public:
 

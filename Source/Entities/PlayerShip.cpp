@@ -13,7 +13,6 @@ void PlayerShip::Reset() noexcept
 
 void PlayerShip::Update() noexcept 
 {
-	//Movement
 	float direction = 0;
 	if (IsKeyDown(KEY_LEFT))
 	{

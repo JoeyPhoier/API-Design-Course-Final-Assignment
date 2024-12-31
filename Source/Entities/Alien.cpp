@@ -29,18 +29,16 @@ void AlienArmy::ResetArmy() noexcept
 
 	const Vector2 armyPixelSize = { (formationSize.x - 1) * alienSpacing * .5f,
 							   (formationSize.y - 1) * alienSpacing * .5f };
-	const auto formationX = static_cast<int>(formationSize.x);
-	const auto formationY = static_cast<int>(formationSize.y);
 	const auto screenWidth = static_cast<float>(GetScreenWidth());
 
 	const Vector2 armyPosition{ screenWidth * .5f,
 								armyPixelSize.y + alienSpacing };
 	const Vector2 firstPos = armyPosition - armyPixelSize;
 
-	for (int collumn = 0; collumn < formationX; ++collumn)
+	for (int collumn = 0; collumn < formationSize.x; ++collumn)
 	{
 		const float posX = firstPos.x + (static_cast<float>(collumn) * alienSpacing);
-		for (int row = 0; row < formationY; ++row)
+		for (int row = 0; row < formationSize.y; ++row)
 		{
 			alienSpan.emplace_back(Vector2{ posX, firstPos.y + (row * alienSpacing) });
 		}
