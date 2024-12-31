@@ -9,6 +9,8 @@
 #include "Alien.h"
 #include "Leaderboard.h"
 #include "Managers.h"
+#include <type_traits>
+#include <utility>
 
 class Background final
 {
@@ -72,11 +74,11 @@ public:
 	void Loop();
 };
 
-template <typename T>
-concept DerivedFromEntity = std::is_base_of_v<BaseEntity, T>;
+template <typename V>
+concept VectorOfDerivedFromEntity = std::is_same_v<V, std::vector<typename std::remove_cvref_t<V>::value_type>> &&
+									std::is_base_of_v<BaseEntity, typename V::value_type>;
 
-template <DerivedFromEntity T>
-bool CollisionCheck_ProjectileVSEntityVector(Projectile& projectile, std::vector<T>& entityVector) noexcept
+bool CollisionCheck_ProjectileVSEntityVector(Projectile& projectile, VectorOfDerivedFromEntity auto& entityVector) noexcept
 {
 	for (auto& entity : entityVector)
 	{
