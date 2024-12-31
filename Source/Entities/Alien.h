@@ -5,7 +5,8 @@
 #include "PlayerShip.h"
 #include <vector>
 
-class Alien final : public BaseEntity
+class 
+	Alien final : public BaseEntity
 {
 private:
 	friend class AlienArmy;

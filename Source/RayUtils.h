@@ -60,5 +60,3 @@ inline Vector2 operator*(const Vector2& first, float second) noexcept
 	first.y * second
 	};
 };
-
-

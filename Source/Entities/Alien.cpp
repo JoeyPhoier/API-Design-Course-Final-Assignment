@@ -95,10 +95,10 @@ void AlienArmy::Update() noexcept
 
 	if (Alien::shouldMoveDownThisFrame)
 	{
-		std::ranges::for_each(alienSpan, [&](Alien& alien) noexcept
-							  {
-								  alien.position.y += 50;
-							  });
+		for (auto& alien : alienSpan)
+		{
+			alien.position.y += 50;
+		}
 		Alien::shouldMoveDownThisFrame = false;
 		Alien::speed *= -1;
 	}

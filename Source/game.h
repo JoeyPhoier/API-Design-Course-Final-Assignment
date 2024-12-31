@@ -47,7 +47,7 @@ class Game final
 	State gameState = State::STARTSCREEN;
 
 	Leaderboard leaderboard;
-	int score = 0;
+	Leaderboard::ScoreType score = 0;
 
 	//Entities
 	PlayerShip player;

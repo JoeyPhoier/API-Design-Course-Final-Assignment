@@ -48,7 +48,7 @@ void Leaderboard::SaveLeaderboard() const
 	}
 }
 
-void Leaderboard::PrepareLeaderboard(int score)
+void Leaderboard::PrepareLeaderboard(ScoreType score)
 {
 	playerName.clear();
 	LoadLeaderboard();
@@ -59,7 +59,7 @@ void Leaderboard::PrepareLeaderboard(int score)
 	canExitLeaderboard = false;
 }
 
-void Leaderboard::Update(int score) noexcept
+void Leaderboard::Update(ScoreType score)
 {
 	if (isInInputNameScreen)
 	{
@@ -102,7 +102,7 @@ void Leaderboard::TextboxWritingInput() noexcept
 	}
 }
 
-void Leaderboard::UpdateNameTextBox(int score)
+void Leaderboard::UpdateNameTextBox(ScoreType score)
 {
 	UpdateTextBoxSelection();
 	if (!textBoxSelected)
@@ -153,10 +153,10 @@ void Leaderboard::RenderTextBox() const noexcept
 void Leaderboard::RenderLeaderboardData() const noexcept
 {
 	int yOffset = 0;
-	for (const auto& data : dataTable)
+	for (const auto& [name, score] : dataTable)
 	{
-		DrawText(data.name.c_str(), 50, 140 + yOffset, 40, YELLOW);
-		DrawText(std::format("{}", data.score).c_str(), 350, 140 + yOffset, 40, YELLOW);
+		DrawText(name.c_str(), 50, 140 + yOffset, 40, YELLOW);
+		DrawText(std::format("{}", score).c_str(), 350, 140 + yOffset, 40, YELLOW);
 		yOffset += 40;
 	}
 
@@ -183,7 +183,6 @@ void Leaderboard::Render() const noexcept
 	if (isInInputNameScreen)
 	{
 		RenderTextBox();
-		return;
 	}
 	else
 	{

@@ -7,18 +7,14 @@
 #include <sstream>
 #include <array>
 
+struct PlayerData;	//Defined below Leaderboad
 
-struct PlayerData
+class Leaderboard final
 {
-	std::string name;
-	unsigned int score = 0;
+public:
+	using ScoreType = unsigned int;
 
-	PlayerData() noexcept = default;
-	PlayerData(std::string_view namei, int scorei) noexcept : name(namei), score(scorei) {};
-};
-
-class Leaderboard
-{
+private:
 	std::vector<PlayerData> dataTable;
 	
 	std::string playerName = "";
@@ -32,7 +28,7 @@ class Leaderboard
 
 	void UpdateTextBoxSelection() noexcept;
 	void TextboxWritingInput() noexcept;
-	void UpdateNameTextBox(int score);
+	void UpdateNameTextBox(ScoreType score);
 
 	void InsertNewHighScore(const PlayerData& data);
 
@@ -42,12 +38,18 @@ class Leaderboard
 	void RenderTextBox() const noexcept;
 	void RenderLeaderboardData() const noexcept;
 public:
-	void PrepareLeaderboard(int score);
+	void PrepareLeaderboard(ScoreType score);
 	bool ShouldExitLeaderboard() const noexcept
 	{
 		return canExitLeaderboard;
 	}
 
-	void Update(int score) noexcept;
+	void Update(ScoreType score);
 	void Render() const noexcept;
+};
+
+struct PlayerData
+{
+	std::string name;
+	Leaderboard::ScoreType score = 0;
 };

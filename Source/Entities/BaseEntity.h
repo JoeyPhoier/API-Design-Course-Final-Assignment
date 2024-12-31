@@ -41,7 +41,7 @@ public:
 };
 
 template <typename V>
-concept VectorOfDerivedFromEntity = std::is_same_v<V, std::vector<typename std::remove_cvref_t<V>::value_type>>&&
+concept VectorOfDerivedFromEntity = std::is_same_v<V, std::vector<typename std::remove_cvref_t<V>::value_type>> &&
 									std::is_base_of_v<BaseEntity, typename V::value_type>;
 
 void RenderEntityVector(const VectorOfDerivedFromEntity auto& entityVector, const Texture2D& texture) noexcept
