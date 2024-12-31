@@ -26,15 +26,12 @@ private:
 	static constexpr float maxLaserCooldown = 2;
 	float currLaserCooldown = maxLaserCooldown;
 
-	Vector2 formationSize = { 8,5 };
+	static constexpr Vector2 formationSize = { 8,5 };
 	static constexpr float alienSpacing = 100;
 public:
 
 	std::vector<Alien> alienSpan;
 	std::vector<Projectile> alienLasers;
-
-	AlienArmy() = default;
-	explicit AlienArmy(Vector2 formation) noexcept :formationSize(formation){};
 
 	void Clear() noexcept
 	{

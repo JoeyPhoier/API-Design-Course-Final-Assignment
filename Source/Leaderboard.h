@@ -11,7 +11,7 @@
 struct PlayerData
 {
 	std::string name;
-	unsigned int score;
+	unsigned int score = 0;
 
 	PlayerData() noexcept = default;
 	PlayerData(std::string_view namei, int scorei) noexcept : name(namei), score(scorei) {};
@@ -32,12 +32,12 @@ class Leaderboard
 
 	void UpdateTextBoxSelection() noexcept;
 	void TextboxWritingInput() noexcept;
-	void UpdateNameTextBox(int score) noexcept;
+	void UpdateNameTextBox(int score);
 
-	void InsertNewHighScore(const PlayerData& data) noexcept;
+	void InsertNewHighScore(const PlayerData& data);
 
 	void LoadLeaderboard();
-	void SaveLeaderboard();
+	void SaveLeaderboard() const;
 
 	void RenderTextBox() const noexcept;
 	void RenderLeaderboardData() const noexcept;

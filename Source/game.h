@@ -57,19 +57,19 @@ class Game final
 	static constexpr int defaultBarrierCount = 5;
 	Background background;
 
-	void StartGameplay() noexcept;
-	void EndGameplay() noexcept;
+	void StartGameplay();
+	void EndGameplay();
 
 	void LoadLevelFromFile();
-	void SaveLevelToFile();
+	void SaveLevelToFile() const;
 
-	void Update() noexcept;
+	void Update();
 	void CollisionChecks() noexcept;
-	void CleanUpDeadEntities() noexcept;
+	void CleanUpDeadEntities();
 
 	void Render() const noexcept;
 public:
-	void Loop() noexcept;
+	void Loop();
 };
 
 template <typename T>
@@ -80,7 +80,7 @@ bool CollisionCheck_ProjectileVSEntityVector(Projectile& projectile, std::vector
 {
 	for (auto& entity : entityVector)
 	{
-		if (MyCheckCollision_AABBCircle(projectile.position, projectile.size, entity.position, entity.radius))
+		if (MyCheckCollision_AABBCircle(projectile.position, Projectile::size, entity.position, entity.radius))
 		{
 			projectile.Damage();
 			entity.Damage();

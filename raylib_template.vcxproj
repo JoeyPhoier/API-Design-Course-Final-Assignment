@@ -169,7 +169,6 @@
     <ClCompile Include="Source\Entities\PlayerShip.cpp" />
     <ClCompile Include="Source\game.cpp" />
     <ClCompile Include="Source\Leaderboard.cpp" />
-    <ClCompile Include="Source\level.cpp" />
     <ClCompile Include="Source\main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -180,7 +179,6 @@
     <ClInclude Include="Source\Entities\Projectile.h" />
     <ClInclude Include="Source\game.h" />
     <ClInclude Include="Source\Leaderboard.h" />
-    <ClInclude Include="Source\level.h" />
     <ClInclude Include="Source\RayUtils.h" />
     <ClInclude Include="Source\Resources\MyTexture2D.h" />
     <ClInclude Include="Source\Resources\Managers.h" />

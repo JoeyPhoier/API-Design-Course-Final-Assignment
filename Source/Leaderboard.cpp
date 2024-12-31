@@ -5,13 +5,13 @@
 #include <fstream>
 
 //This is required due to a raylib bug in the CheckCollisionPointRec
-bool FixedCheckCollisionPointRec(const Vector2& point, Rectangle rectangle) noexcept
+static bool FixedCheckCollisionPointRec(const Vector2& point, Rectangle rectangle) noexcept
 {
 	rectangle.y -= rectangle.height * .5f;
 	return CheckCollisionPointRec(point, rectangle);
 }
 
-void Leaderboard::LoadLeaderboard() 
+void Leaderboard::LoadLeaderboard()
 {
 	dataTable.clear();
 
@@ -21,7 +21,7 @@ void Leaderboard::LoadLeaderboard()
 		return;
 	}
 
-	size_t entryCount;
+	size_t entryCount = 0;
 	input.read(std::bit_cast<char*>(&entryCount), sizeof(size_t));
 	dataTable.resize(entryCount);
 	for (auto& entry : dataTable)
@@ -34,7 +34,7 @@ void Leaderboard::LoadLeaderboard()
 	}
 }
 
-void Leaderboard::SaveLeaderboard()
+void Leaderboard::SaveLeaderboard() const
 {
 	std::ofstream outfile("Leaderboard.sig", std::ios::binary);
 	const size_t entryCount = dataTable.size();
@@ -102,7 +102,7 @@ void Leaderboard::TextboxWritingInput() noexcept
 	}
 }
 
-void Leaderboard::UpdateNameTextBox(int score) noexcept
+void Leaderboard::UpdateNameTextBox(int score)
 {
 	UpdateTextBoxSelection();
 	if (!textBoxSelected)
@@ -131,7 +131,7 @@ void Leaderboard::UpdateNameTextBox(int score) noexcept
 
 void Leaderboard::RenderTextBox() const noexcept
 {
-	const int textBoxThickness = 3;
+	constexpr int textBoxThickness = 3;
 	DrawRectangleRec(textboxRectangle, LIGHTGRAY);
 	DrawRectangleLinesEx(textboxRectangle, textBoxThickness, textBoxSelected ? RED : DARKGRAY);
 
@@ -164,7 +164,7 @@ void Leaderboard::RenderLeaderboardData() const noexcept
 	DrawText("LEADERBOARD", 50, 100, 40, YELLOW);
 }
 
-void Leaderboard::InsertNewHighScore(const PlayerData& data) noexcept
+void Leaderboard::InsertNewHighScore(const PlayerData& data)
 {
 	dataTable.emplace_back(data);
 	std::ranges::sort(dataTable, [&](const PlayerData& a, const PlayerData& b)

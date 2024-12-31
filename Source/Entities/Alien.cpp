@@ -2,6 +2,7 @@
 #include "RayUtils.h"
 #include <algorithm>
 #include <functional>
+#include <random>
 
 float Alien::speed = 100;
 bool Alien::shouldMoveDownThisFrame = false;
@@ -28,23 +29,25 @@ void AlienArmy::ResetArmy() noexcept
 
 	const Vector2 armyPixelSize = { (formationSize.x - 1) * alienSpacing * .5f,
 							   (formationSize.y - 1) * alienSpacing * .5f };
-
+	const auto formationX = static_cast<int>(formationSize.x);
+	const auto formationY = static_cast<int>(formationSize.y);
 	const auto screenWidth = static_cast<float>(GetScreenWidth());
+
 	const Vector2 armyPosition{ screenWidth * .5f,
 								armyPixelSize.y + alienSpacing };
 	const Vector2 firstPos = armyPosition - armyPixelSize;
 
-	for (int collumn = 0; collumn < formationSize.x; ++collumn)
+	for (int collumn = 0; collumn < formationX; ++collumn)
 	{
-		const float posX = firstPos.x + (collumn * alienSpacing);
-		for (int row = 0; row < formationSize.y; ++row)
+		const float posX = firstPos.x + (static_cast<float>(collumn) * alienSpacing);
+		for (int row = 0; row < formationY; ++row)
 		{
 			alienSpan.emplace_back(Vector2{ posX, firstPos.y + (row * alienSpacing) });
 		}
 	}
 }
 
-[[nodiscard]] Vector2 GetLowestAlienPositionFromRandomCollum(std::vector<Alien> alienVector)
+[[nodiscard]] static Vector2 GetLowestAlienPositionFromRandomCollum(std::vector<Alien> alienVector) noexcept
 {
 	std::vector<Vector2> lowestAlienPosition;
 	for (auto& alien : alienVector)
@@ -60,8 +63,8 @@ void AlienArmy::ResetArmy() noexcept
 			lowestAlienPosition.back() = alien.position;
 		}
 	}
-	//TODO: Use std sample
-	return lowestAlienPosition[rand() % lowestAlienPosition.size()];
+	std::minstd_rand randomInt;
+	return lowestAlienPosition[randomInt() % lowestAlienPosition.size()];
 }
 
 void AlienArmy::UpdateAlienShooting() noexcept
@@ -107,7 +110,7 @@ bool AlienArmy::HasAlienReachedPlayer(const Vector2& playerPosition, const float
 {
 	return std::ranges::any_of(alienSpan, [&](const Alien& alien)
 							   {
-								   return (alien.position.y + alien.radius > playerPosition.y - playerRadius);
+								   return (alien.position.y + Alien::radius > playerPosition.y - playerRadius);
 							   });
 }
 

@@ -291,7 +291,7 @@ RMAPI float Vector2DotProduct(Vector2 v1, Vector2 v2)
 }
 
 // Calculate distance between two vectors
-RMAPI float Vector2Distance(Vector2 v1, Vector2 v2)
+RMAPI float Vector2Distance(Vector2 v1, Vector2 v2) noexcept
 {
     float result = sqrtf((v1.x - v2.x)*(v1.x - v2.x) + (v1.y - v2.y)*(v1.y - v2.y));
 
@@ -444,7 +444,7 @@ RMAPI Vector2 Vector2Invert(Vector2 v)
 
 // Clamp the components of the vector between
 // min and max values specified by the given vectors
-RMAPI Vector2 Vector2Clamp(Vector2 v, Vector2 min, Vector2 max)
+RMAPI Vector2 Vector2Clamp(Vector2 v, Vector2 min, Vector2 max) noexcept
 {
     Vector2 result = { 0 };
 

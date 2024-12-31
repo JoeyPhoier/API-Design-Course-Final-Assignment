@@ -18,7 +18,7 @@ private:
 	static constexpr float maxLaserCooldown = 0.4f;
 	float currLaserCooldown = 0;
 public:
-	float radius = 50;
+	static constexpr float radius = 50;
 	int currHealth = maxHealth;
 
 	PlayerShip() noexcept { Reset(); };

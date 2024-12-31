@@ -8,7 +8,7 @@
 #include "raymath.h"
 #include <fstream>
 
-void ResetBarriers(std::vector<Barrier>& barrierVector, int barrierCount) noexcept
+static void ResetBarriers(std::vector<Barrier>& barrierVector, int barrierCount) noexcept
 {
 	const auto barrierCountf = static_cast<float>(barrierCount + 1);
 	const float wallSpacing = static_cast<float>(GetScreenWidth()) / barrierCountf;
@@ -19,7 +19,7 @@ void ResetBarriers(std::vector<Barrier>& barrierVector, int barrierCount) noexce
 	}
 }
 
-void Game::StartGameplay() noexcept
+void Game::StartGameplay()
 {
 	score = 0;
 	if (FileExists("Level.sig"))
@@ -37,7 +37,7 @@ void Game::StartGameplay() noexcept
 	gameState = State::GAMEPLAY;
 }
 
-void Game::EndGameplay() noexcept
+void Game::EndGameplay()
 {
 	alienArmy.Clear();
 	playerLasers.clear();
@@ -58,21 +58,21 @@ void Game::LoadLevelFromFile()
 		return;
 	}
 	inFile.read(std::bit_cast<char*>(&player), sizeof(PlayerShip));
-	size_t alienCount;
+	size_t alienCount = 0;
 	inFile.read(std::bit_cast<char*>(&alienCount), sizeof(size_t));
 	alienArmy.alienSpan.resize(alienCount);
 	for (auto& alien : alienArmy.alienSpan)
 	{
 		inFile.read(std::bit_cast<char*>(&alien.position), sizeof(Vector2));
 	}
-	size_t barrierCount;
+	size_t barrierCount = 0;
 	inFile.read(std::bit_cast<char*>(&barrierCount), sizeof(size_t));
 	barriers.resize(barrierCount);
 	inFile.read(std::bit_cast<char*>(&barriers.front()), sizeof(Barrier) * barrierCount);
 	inFile.read(std::bit_cast<char*>(&background), sizeof(Background));
 }
 
-void Game::SaveLevelToFile()
+void Game::SaveLevelToFile() const
 {
 	std::ofstream outFile("Level.sig", std::ios::binary);
 	outFile.write(std::bit_cast<const char*>(&player), sizeof(player));
@@ -88,7 +88,7 @@ void Game::SaveLevelToFile()
 	outFile.write(std::bit_cast<const char*>(&background), sizeof(background));
 }
 
-void Game::Update() noexcept
+void Game::Update()
 {
 	switch (gameState)
 	{
@@ -108,7 +108,7 @@ void Game::Update() noexcept
 		player.CheckForLaserInput(playerLasers);
 		std::ranges::for_each(playerLasers, std::mem_fn(&Projectile::Update));
 		alienArmy.Update();
-		if (alienArmy.HasAlienReachedPlayer(player.position, player.radius))
+		if (alienArmy.HasAlienReachedPlayer(player.position, PlayerShip::radius))
 		{
 			EndGameplay();
 		}
@@ -152,7 +152,7 @@ void Game::CollisionChecks() noexcept
 	for (auto& alienLaser : alienArmy.alienLasers)
 	{
 		CollisionCheck_ProjectileVSEntityVector(alienLaser, barriers);
-		if (MyCheckCollision_AABBCircle(alienLaser.position, alienLaser.size, player.position, player.radius))
+		if (MyCheckCollision_AABBCircle(alienLaser.position, Projectile::size, player.position, PlayerShip::radius))
 		{
 			alienLaser.Damage();
 			player.Damage();
@@ -160,7 +160,7 @@ void Game::CollisionChecks() noexcept
 	}
 }
 
-void Game::CleanUpDeadEntities() noexcept
+void Game::CleanUpDeadEntities()
 {
 	if (!player.IsAlive())
 	{
@@ -210,7 +210,7 @@ void Game::Render() const noexcept
 	}
 }
 
-void Game::Loop() noexcept
+void Game::Loop()
 {
 	while (!WindowShouldClose())    // Detect window close button or ESC key
 	{

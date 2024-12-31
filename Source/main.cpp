@@ -35,8 +35,5 @@ int main(void)
 
     game.Loop();
 
-    //TODO: What is this doing here?
-    std::string filename = "level.txt";
-
     return 0;
 }
