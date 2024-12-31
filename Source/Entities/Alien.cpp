@@ -116,12 +116,6 @@ bool AlienArmy::HasAlienReachedPlayer(const Vector2& playerPosition, const float
 
 void AlienArmy::Render(const Texture2D& alienTexture, const Texture2D& projectileTexture) const noexcept
 {
-	std::ranges::for_each(alienSpan, [&](const Alien& alien)
-						  {
-							  alien.Render(alienTexture);
-						  });
-	std::ranges::for_each(alienLasers, [&](const Projectile& laser)
-						  {
-							  laser.Render(projectileTexture);
-						  });
+	RenderEntityVector(alienSpan, alienTexture);
+	RenderEntityVector(alienLasers, projectileTexture);
 }

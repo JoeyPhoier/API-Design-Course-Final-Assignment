@@ -9,8 +9,6 @@
 #include "Alien.h"
 #include "Leaderboard.h"
 #include "Managers.h"
-#include <type_traits>
-#include <utility>
 
 class Background final
 {
@@ -73,10 +71,6 @@ class Game final
 public:
 	void Loop();
 };
-
-template <typename V>
-concept VectorOfDerivedFromEntity = std::is_same_v<V, std::vector<typename std::remove_cvref_t<V>::value_type>> &&
-									std::is_base_of_v<BaseEntity, typename V::value_type>;
 
 bool CollisionCheck_ProjectileVSEntityVector(Projectile& projectile, VectorOfDerivedFromEntity auto& entityVector) noexcept
 {

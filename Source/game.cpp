@@ -188,14 +188,8 @@ void Game::Render() const noexcept
 		break;
 	case State::GAMEPLAY:
 		background.Render(textures.backgroundTexture);
-		std::ranges::for_each(playerLasers, [&](const Projectile& laser)
-							  {
-								  laser.Render(textures.projectileTexture);
-							  });
-		std::ranges::for_each(barriers, [&](const Barrier& barrier)
-							  {
-								  barrier.Render(textures.barrierTexture);
-							  });
+		RenderEntityVector(playerLasers, textures.projectileTexture);
+		RenderEntityVector(barriers, textures.barrierTexture);
 		player.Render(textures.playerTexture);
 		alienArmy.Render(textures.alienTexture, textures.projectileTexture);
 
