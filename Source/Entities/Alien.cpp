@@ -45,10 +45,10 @@ void AlienArmy::ResetArmy() noexcept
 	}
 }
 
-[[nodiscard]] static Vector2 GetLowestAlienPositionFromRandomCollum(std::vector<Alien> alienVector) noexcept
+[[nodiscard]] static Vector2 GetLowestAlienPositionFromRandomCollum(const std::vector<Alien>& alienVector) noexcept
 {
 	std::vector<Vector2> lowestAlienPosition;
-	for (auto& alien : alienVector)
+	for (const auto& alien : alienVector)
 	{
 		if (lowestAlienPosition.empty() ||
 			alien.position.x != lowestAlienPosition.back().x)
@@ -75,7 +75,8 @@ void AlienArmy::UpdateAlienShooting() noexcept
 	if (const bool CanFireLaser = currLaserCooldown <= 0)
 	{
 		currLaserCooldown = maxLaserCooldown;
-		alienLasers.emplace_back(GetLowestAlienPositionFromRandomCollum(alienSpan), false);
+		Vector2 FiringAlienPosition = GetLowestAlienPositionFromRandomCollum(alienSpan);
+		alienLasers.emplace_back(FiringAlienPosition, false);
 	}
 }
 
@@ -104,7 +105,7 @@ void AlienArmy::Update() noexcept
 	UpdateAlienShooting();
 }
 
-bool AlienArmy::HasAlienReachedPlayer(const Vector2& playerPosition, const float playerRadius) const noexcept
+inline bool AlienArmy::HasAlienReachedPlayer(const Vector2& playerPosition, const float playerRadius) const noexcept
 {
 	return std::ranges::any_of(alienSpan, [&](const Alien& alien)
 							   {
@@ -112,7 +113,7 @@ bool AlienArmy::HasAlienReachedPlayer(const Vector2& playerPosition, const float
 							   });
 }
 
-void AlienArmy::Render(const Texture2D& alienTexture, const Texture2D& projectileTexture) const noexcept
+inline void AlienArmy::Render(const Texture2D& alienTexture, const Texture2D& projectileTexture) const noexcept
 {
 	RenderEntityVector(alienSpan, alienTexture);
 	RenderEntityVector(alienLasers, projectileTexture);

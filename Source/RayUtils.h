@@ -1,7 +1,7 @@
 #pragma once
 #include "raylib.h"
 
-static void DrawTextureQuick(const Texture2D& texture, Vector2 position, float scale) noexcept
+inline static void DrawTextureQuick(const Texture2D& texture, Vector2 position, float scale) noexcept
 {
 	DrawTexturePro(texture,
 		{

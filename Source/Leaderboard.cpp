@@ -5,7 +5,7 @@
 #include <fstream>
 
 //This is required due to a raylib bug in the CheckCollisionPointRec
-static bool FixedCheckCollisionPointRec(const Vector2& point, Rectangle rectangle) noexcept
+inline static bool FixedCheckCollisionPointRec(const Vector2& point, Rectangle rectangle) noexcept
 {
 	rectangle.y -= rectangle.height * .5f;
 	return CheckCollisionPointRec(point, rectangle);
