@@ -29,11 +29,22 @@
 // Program main entry point
 //------------------------------------------------------------------------------------
 int main(void)
-{    
-    Game game;
-    SetTargetFPS(60);
+{   
+    try
+    {
+        Game game;
+        SetTargetFPS(60);
 
-    game.Loop();
+        game.Loop();
+    }
+    catch (const std::runtime_error& e)
+    {
+        std::puts(e.what());
+    }
+    catch (...)
+    {
+        std::cerr << "Unknown exception" << std::endl;
+    }
 
     return 0;
 }
