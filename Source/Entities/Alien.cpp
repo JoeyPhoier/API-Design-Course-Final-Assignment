@@ -1,6 +1,5 @@
 #include "Alien.h"
 #include "RayUtils.h"
-#include <functional>
 #include <random>
 #include "game.h"
 
@@ -77,8 +76,6 @@ void AlienArmy::Reset() noexcept
 	return lowestAlienPosition[randomInt() % lowestAlienPosition.size()];
 }
 
-
-
 void AlienArmy::UpdateAlienShooting() noexcept
 { 
 	currLaserCooldown -= GetFrameTime();
@@ -103,8 +100,14 @@ void AlienArmy::Update() noexcept
 		return;
 	}
 
-	std::ranges::for_each(alienSpan, std::mem_fn(&Alien::Update));
-	std::ranges::for_each(alienLasers, std::mem_fn(&Projectile::Update));
+	for (auto& alien : alienSpan)
+	{
+		alien.Update();
+	}
+	for (auto& laser : alienLasers)
+	{
+		laser.Update();
+	}
 
 	if (Alien::shouldMoveDownThisFrame)
 	{

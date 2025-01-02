@@ -71,5 +71,8 @@
     <ClInclude Include="Source\Resources\Managers.h">
       <Filter>Header Files\Resources</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Resources\VariableSaveSystem.h">
+      <Filter>Header Files\Resources</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

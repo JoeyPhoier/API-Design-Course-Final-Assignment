@@ -32,10 +32,15 @@ public:
 
 class Game final
 {
+public:
+	static constexpr Vector2 resolution = { 1920,1080 };
+private:
 	std::string windowName = "SPACE INVADERS";
 	WindowManager window = WindowManager(resolution, windowName);
 	AudioManager audio;
 	TextureManager textures;
+
+	std::string levelFileName = "Level.sig";
 
 	enum class State
 	{
@@ -68,12 +73,10 @@ class Game final
 
 	void Render() const noexcept;
 public:
-	static constexpr Vector2 resolution = { 1920,1080 };
-
 	void Loop();
 };
 
-bool CollisionCheck_ProjectileVSEntityVector(Projectile& projectile, VectorOfDerivedFromEntity auto& entityVector) noexcept
+bool CollisionCheck_ProjectileVSEntityVector(Projectile& projectile, is_VectorOfDerivedFromEntity auto& entityVector) noexcept
 {
 	for (auto& entity : entityVector)
 	{

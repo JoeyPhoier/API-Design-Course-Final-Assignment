@@ -6,7 +6,7 @@
 #include <functional>
 #include <format>
 #include "raymath.h"
-#include <fstream>
+#include "VariableSaveSystem.h"
 #include <cassert>
 
 //Utilizes predefined screen resolution instead of GetScreenWidth()/GetScreenHeight() in order to precompute the barrier vector.
@@ -59,40 +59,20 @@ void Game::LoadLevelFromFile()
 	alienArmy.Clear();
 	barriers.clear();
 
-	std::ifstream inFile("Level.sig", std::ios::binary);
-	if (inFile.fail())
-	{
-		return;
-	}
-	inFile.read(std::bit_cast<char*>(&player), sizeof(PlayerShip));
-	size_t alienCount = 0;
-	inFile.read(std::bit_cast<char*>(&alienCount), sizeof(size_t));
-	alienArmy.alienSpan.resize(alienCount);
-	for (auto& alien : alienArmy.alienSpan)
-	{
-		inFile.read(std::bit_cast<char*>(&alien.position), sizeof(Vector2));
-	}
-	size_t barrierCount = 0;
-	inFile.read(std::bit_cast<char*>(&barrierCount), sizeof(size_t));
-	barriers.resize(barrierCount);
-	inFile.read(std::bit_cast<char*>(&barriers.front()), sizeof(Barrier) * barrierCount);
-	inFile.read(std::bit_cast<char*>(&background), sizeof(Background));
+	MyVariableLoader inFile(levelFileName);
+	inFile.Load(player);
+	inFile.Load(alienArmy.alienSpan);
+	inFile.Load(barriers);
+	inFile.Load(background);
 }
 
 void Game::SaveLevelToFile() const
 {
-	std::ofstream outFile("Level.sig", std::ios::binary);
-	outFile.write(std::bit_cast<const char*>(&player), sizeof(player));
-	const size_t alienCount = alienArmy.alienSpan.size();
-	outFile.write(std::bit_cast<const char*>(&alienCount), sizeof(size_t));
-	for (auto& alien : alienArmy.alienSpan)
-	{
-		outFile.write(std::bit_cast<const char*>(&alien.position), sizeof(Vector2));
-	}
-	const size_t barrierCount = barriers.size();
-	outFile.write(std::bit_cast<const char*>(&barrierCount), sizeof(size_t));
-	outFile.write(std::bit_cast<const char*>(&barriers.front()), sizeof(Barrier) * barrierCount);
-	outFile.write(std::bit_cast<const char*>(&background), sizeof(background));
+	MyVariableSaver outFile(levelFileName);
+	outFile.Save(player);
+	outFile.Save(alienArmy.alienSpan);
+	outFile.Save(barriers);
+	outFile.Save(background);
 }
 
 void Game::Update()
@@ -113,7 +93,10 @@ void Game::Update()
 
 		player.Update();
 		player.CheckForLaserInput(playerLasers);
-		std::ranges::for_each(playerLasers, std::mem_fn(&Projectile::Update));
+		for (auto& laser : playerLasers)
+		{
+			laser.Update();
+		}
 		alienArmy.Update();
 		if (alienArmy.HasAlienReachedPlayer(player.position, PlayerShip::radius))
 		{

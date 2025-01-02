@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -180,6 +180,7 @@
     <ClInclude Include="Source\game.h" />
     <ClInclude Include="Source\Leaderboard.h" />
     <ClInclude Include="Source\RayUtils.h" />
+    <ClInclude Include="Source\Resources\VariableSaveSystem.h" />
     <ClInclude Include="Source\Resources\MyTexture2D.h" />
     <ClInclude Include="Source\Resources\Managers.h" />
   </ItemGroup>
