@@ -2,6 +2,7 @@
 #include "RayUtils.h"
 #include <functional>
 #include <random>
+#include "game.h"
 
 float Alien::speed = 100;
 bool Alien::shouldMoveDownThisFrame = false;
@@ -22,26 +23,39 @@ void Alien::Update() noexcept
 }
 
 //ALIEN ARMY
-void AlienArmy::ResetArmy() noexcept
+[[nodiscard]] constexpr std::vector<Alien> ResetAlienSpan(Vector2Int formationSize, float alienSpacing) noexcept
 {
-	alienSpan.clear();
+	std::vector<Alien> alienSpanTemp(formationSize.x * formationSize.y);
 
 	const Vector2 armyPixelSize = { (formationSize.x - 1) * alienSpacing * .5f,
 							   (formationSize.y - 1) * alienSpacing * .5f };
-	const auto screenWidth = static_cast<float>(GetScreenWidth());
+	const float screenWidth = Game::resolution.x;
 
 	const Vector2 armyPosition{ screenWidth * .5f,
 								armyPixelSize.y + alienSpacing };
-	const Vector2 firstPos = armyPosition - armyPixelSize;
+	Vector2 alienPos = armyPosition - armyPixelSize;
 
-	for (int collumn = 0; collumn < formationSize.x; ++collumn)
+	int collumCounter = 0;
+	for (auto& alien : alienSpanTemp)
 	{
-		const float posX = firstPos.x + (static_cast<float>(collumn) * alienSpacing);
-		for (int row = 0; row < formationSize.y; ++row)
+		alien.position = alienPos;
+		alienPos.x += alienSpacing;
+		++collumCounter;
+		if (collumCounter >= formationSize.x)
 		{
-			alienSpan.emplace_back(Vector2{ posX, firstPos.y + (row * alienSpacing) });
+			collumCounter = 0;
+			alienPos.x = armyPosition.x - armyPixelSize.x;
+			alienPos.y += alienSpacing;
 		}
 	}
+	return alienSpanTemp;
+}
+
+void AlienArmy::Reset() noexcept
+{
+	alienLasers.clear();
+	alienSpan = ResetAlienSpan(formationSize, alienSpacing);
+	static_assert(ResetAlienSpan(formationSize, alienSpacing).size() == formationSize.x * formationSize.y);
 }
 
 [[nodiscard]] static Vector2 GetLowestAlienPositionFromRandomCollum(const std::vector<Alien>& alienVector) noexcept
@@ -64,6 +78,8 @@ void AlienArmy::ResetArmy() noexcept
 	return lowestAlienPosition[randomInt() % lowestAlienPosition.size()];
 }
 
+
+
 void AlienArmy::UpdateAlienShooting() noexcept
 { 
 	currLaserCooldown -= GetFrameTime();
@@ -84,7 +100,7 @@ void AlienArmy::Update() noexcept
 	//Spawn new aliens if aliens run out
 	if (alienSpan.size() < 1)
 	{
-		ResetArmy();
+		Reset();
 		return;
 	}
 

@@ -10,7 +10,7 @@
 #include <cassert>
 
 //Utilizes predefined screen resolution instead of GetScreenWidth()/GetScreenHeight() in order to precompute the barrier vector.
-static constexpr std::vector<Barrier> ResetBarriers(int barrierCount, Vector2 screenSize) noexcept
+[[nodiscard]] static constexpr std::vector<Barrier> ResetBarriers(int barrierCount, Vector2 screenSize) noexcept
 {
 	std::vector<Barrier> barrierVector(barrierCount);
 	const auto barrierCountf = static_cast<float>(barrierCount);
@@ -35,7 +35,7 @@ void Game::StartGameplay()
 	else
 	{
 		player.Reset();
-		alienArmy.ResetArmy();
+		alienArmy.Reset();
 		barriers = ResetBarriers(defaultBarrierCount, resolution);
 		static_assert(ResetBarriers(defaultBarrierCount, resolution).size() == defaultBarrierCount);
 		background.Reset();

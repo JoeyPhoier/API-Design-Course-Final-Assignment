@@ -32,7 +32,6 @@ public:
 
 class Game final
 {
-	static constexpr Vector2 resolution = { 1920,1080 };
 	std::string windowName = "SPACE INVADERS";
 	WindowManager window = WindowManager(resolution, windowName);
 	AudioManager audio;
@@ -69,6 +68,8 @@ class Game final
 
 	void Render() const noexcept;
 public:
+	static constexpr Vector2 resolution = { 1920,1080 };
+
 	void Loop();
 };
 

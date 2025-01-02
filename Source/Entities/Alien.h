@@ -30,8 +30,8 @@ private:
 
 	static constexpr Vector2Int formationSize = { 8,5 };
 	static constexpr float alienSpacing = 100;
-public:
 
+public:
 	std::vector<Alien> alienSpan;
 	std::vector<Projectile> alienLasers;
 
@@ -40,7 +40,7 @@ public:
 		alienSpan.clear();
 		alienLasers.clear();
 	}
-	void ResetArmy() noexcept;
+	void Reset() noexcept;
 
 	void UpdateAlienShooting() noexcept;
 	void Update() noexcept;
