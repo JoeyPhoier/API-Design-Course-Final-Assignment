@@ -30,7 +30,6 @@ void Alien::Update() noexcept
 	const Vector2 armyPixelSize = { (formationSize.x - 1) * alienSpacing * .5f,
 							   (formationSize.y - 1) * alienSpacing * .5f };
 	const float screenWidth = Game::resolution.x;
-
 	const Vector2 armyPosition{ screenWidth * .5f,
 								armyPixelSize.y + alienSpacing };
 	Vector2 alienPos = armyPosition - armyPixelSize;
