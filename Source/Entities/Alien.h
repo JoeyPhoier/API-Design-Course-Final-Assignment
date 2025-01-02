@@ -4,6 +4,7 @@
 #include "Projectile.h"
 #include "PlayerShip.h"
 #include <vector>
+#include <algorithm>
 
 class 
 	Alien final : public BaseEntity
@@ -43,7 +44,17 @@ public:
 
 	void UpdateAlienShooting() noexcept;
 	void Update() noexcept;
-	[[nodiscard]] bool HasAlienReachedPlayer(const Vector2& playerPosition, const float playerRadius) const noexcept;
+	[[nodiscard]] inline bool HasAlienReachedPlayer(const Vector2& playerPosition, const float playerRadius) const noexcept
+	{
+		return std::ranges::any_of(alienSpan, [&](const Alien& alien)
+								   {
+									   return (alien.position.y + Alien::radius > playerPosition.y - playerRadius);
+								   });
+	}
 
-	void Render(const Texture2D& alienTexture, const Texture2D& projectileTexture) const noexcept;
+	inline void Render(const Texture2D& alienTexture, const Texture2D& projectileTexture) const noexcept
+	{
+		RenderEntityVector(alienSpan, alienTexture);
+		RenderEntityVector(alienLasers, projectileTexture);
+	}
 };

@@ -17,7 +17,7 @@ public:
 	BaseEntity() = default;
 	explicit BaseEntity(Vector2 spawnPoint) noexcept : position(spawnPoint)
 	{};
-	virtual ~BaseEntity() = default;
+	virtual constexpr ~BaseEntity() noexcept = default;
 
 	BaseEntity(const BaseEntity& other) = default;
 	BaseEntity& operator=(const BaseEntity& other) = default;

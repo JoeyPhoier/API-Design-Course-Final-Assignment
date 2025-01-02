@@ -1,6 +1,5 @@
 #include "Alien.h"
 #include "RayUtils.h"
-#include <algorithm>
 #include <functional>
 #include <random>
 
@@ -103,18 +102,4 @@ void AlienArmy::Update() noexcept
 	}
 
 	UpdateAlienShooting();
-}
-
-inline bool AlienArmy::HasAlienReachedPlayer(const Vector2& playerPosition, const float playerRadius) const noexcept
-{
-	return std::ranges::any_of(alienSpan, [&](const Alien& alien)
-							   {
-								   return (alien.position.y + Alien::radius > playerPosition.y - playerRadius);
-							   });
-}
-
-inline void AlienArmy::Render(const Texture2D& alienTexture, const Texture2D& projectileTexture) const noexcept
-{
-	RenderEntityVector(alienSpan, alienTexture);
-	RenderEntityVector(alienLasers, projectileTexture);
 }

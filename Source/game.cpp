@@ -7,16 +7,22 @@
 #include <format>
 #include "raymath.h"
 #include <fstream>
+#include <cassert>
 
-static void ResetBarriers(std::vector<Barrier>& barrierVector, int barrierCount) noexcept
+//Utilizes predefined screen resolution instead of GetScreenWidth()/GetScreenHeight() in order to precompute the barrier vector.
+static constexpr std::vector<Barrier> ResetBarriers(int barrierCount, Vector2 screenSize) noexcept
 {
-	const auto barrierCountf = static_cast<float>(barrierCount + 1);
-	const float wallSpacing = static_cast<float>(GetScreenWidth()) / barrierCountf;
-	const float wallHeight = static_cast<float>(GetScreenHeight()) - 250;
-	for (int i = 1; i <= barrierCount; i++)
+	std::vector<Barrier> barrierVector(barrierCount);
+	const auto barrierCountf = static_cast<float>(barrierCount);
+	const float wallSpacing = screenSize.x / (barrierCountf + 1.f);
+	const float wallHeight = screenSize.y - 250;
+	int i = 1;
+	for (auto& barrier : barrierVector)
 	{
-		barrierVector.emplace_back(Vector2{ wallSpacing * i , wallHeight });
+		barrier.position = Vector2{ wallSpacing * i , wallHeight };
+		++i;
 	}
+	return barrierVector;
 }
 
 void Game::StartGameplay()
@@ -30,7 +36,8 @@ void Game::StartGameplay()
 	{
 		player.Reset();
 		alienArmy.ResetArmy();
-		ResetBarriers(barriers, defaultBarrierCount);
+		barriers = ResetBarriers(defaultBarrierCount, resolution);
+		static_assert(ResetBarriers(defaultBarrierCount, resolution).size() == defaultBarrierCount);
 		background.Reset();
 		SaveLevelToFile();
 	}

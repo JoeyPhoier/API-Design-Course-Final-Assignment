@@ -16,6 +16,7 @@ public:
 
 	Barrier() noexcept = default;
 	explicit Barrier(Vector2 spawnPoint) noexcept : BaseEntity(spawnPoint) {};
+	constexpr ~Barrier() noexcept override = default;
 
 	void Damage() noexcept override
 	{
@@ -24,6 +25,10 @@ public:
 		{
 			isAlive = false;
 		}
+	}
+	inline void ResetHealth() noexcept
+	{
+		currHealth = maxHealth;
 	}
 
 	void Update() noexcept override { /*Does not require any Updating operations.*/ };
