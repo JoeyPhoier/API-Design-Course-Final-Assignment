@@ -6,13 +6,13 @@
 class Barrier final : public BaseEntity
 {
 private:
-	static constexpr int maxHealth = 50;
+	static constexpr unsigned int maxHealth = 50;
 
-	static constexpr int textSize = 40;
-	static constexpr Vector2 textOffset = { -21, 10 };
+	static constexpr unsigned int textSize = 40;
+	static constexpr Vector2Int textOffset = { -21, 10 };
 public:
 	static constexpr float radius = 60;
-	int currHealth = maxHealth;
+	unsigned int currHealth = maxHealth;
 
 	Barrier() noexcept = default;
 	explicit Barrier(Vector2 spawnPoint) noexcept : BaseEntity(spawnPoint) {};
@@ -32,7 +32,7 @@ public:
 	}
 
 	void Update() noexcept override { /*Does not require any Updating operations.*/ };
-	void Render(const Texture2D& texture) const noexcept override
+	void Render(const Texture2D& texture) const override
 	{
 		BaseEntity::Render(texture);
 		DrawText(std::format("{}", currHealth).c_str(),

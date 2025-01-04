@@ -22,7 +22,7 @@ void Alien::Update() noexcept
 }
 
 //ALIEN ARMY
-[[nodiscard]] constexpr std::vector<Alien> ResetAlienSpan(Vector2Int formationSize, float alienSpacing) noexcept
+[[nodiscard]] static constexpr std::vector<Alien> ResetAlienSpan(Vector2Int formationSize, float alienSpacing) noexcept
 {
 	std::vector<Alien> alienSpanTemp(formationSize.x * formationSize.y);
 

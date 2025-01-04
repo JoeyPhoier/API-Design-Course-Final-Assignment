@@ -35,7 +35,7 @@ public:
 	}
 
 	virtual void Update() noexcept = 0;
-	virtual void Render(const Texture2D& texture) const noexcept
+	virtual void Render(const Texture2D& texture) const 
 	{
 		DrawTextureQuick(texture, position, renderScale);
 	}
@@ -53,7 +53,7 @@ public:
 template <typename V>
 concept is_VectorOfEntityClasses = is_Vector<V> && std::is_base_of_v<BaseEntity, typename V::value_type>;
 
-void RenderEntityVector(const is_VectorOfEntityClasses auto& entityVector, const Texture2D& texture) noexcept
+void RenderEntityVector(const is_VectorOfEntityClasses auto& entityVector, const Texture2D& texture)
 {
 	for (const auto& entity : entityVector)
 	{

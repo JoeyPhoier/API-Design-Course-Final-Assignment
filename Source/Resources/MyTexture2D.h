@@ -5,17 +5,24 @@
 #include <format>
 #include <utility>
 
+class TextureLoadingException : public std::runtime_error
+{
+public:
+	static constexpr std::string_view message = "TEXTURE LOADING EXCEPTION : Failed to load Texture at {}.";
+	explicit TextureLoadingException(std::string_view path) : runtime_error(std::format(message, path)) {}
+};
+
 class MyTexture2D
 {
 	Texture2D texture;
 	
 public:
 	MyTexture2D() = delete;
-	explicit MyTexture2D(std::string path) : texture(LoadTexture(path.c_str()))
+	explicit MyTexture2D(std::string_view path) : texture(LoadTexture(path.data()))
 	{
 		if (texture.id == 0)
 		{
-			throw std::runtime_error(std::format("Failed to load Texture at {}.", path));
+			throw TextureLoadingException(path);
 		}
 	}
 	~MyTexture2D() noexcept
@@ -32,6 +39,8 @@ public:
 	{
 		return texture;
 	}
+	//Normally, implicit conversions like these are evil. However, I find that
+	//wrappers and RAII classes can be treated as an exception to this rule.
 	[[nodiscard]] operator Texture2D() const noexcept
 	{
 		return get();

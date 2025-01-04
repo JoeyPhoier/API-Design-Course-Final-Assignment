@@ -168,7 +168,7 @@ void Game::CleanUpDeadEntities()
 	std::erase_if(alienArmy.alienLasers, IsEntityDead);
 }
 
-void Game::Render() const noexcept
+void Game::Render() const 
 {
 	switch (gameState)
 	{

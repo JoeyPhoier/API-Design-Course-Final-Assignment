@@ -61,9 +61,13 @@ struct PlayerData
 		outFile.Save(name);
 		outFile.Save(score);
 	}
+#pragma warning(disable : 5817)
+	//This function modifies the name and score members, and is therefore not const.
+	//Even so, it generates a warning saying we should mark this function as const.
 	void Unserialize(MyVariableLoader& inFile)
 	{
 		inFile.Load(name);
 		inFile.Load(score);
 	}
+#pragma warning(default : 5817)
 };

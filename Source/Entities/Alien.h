@@ -52,7 +52,7 @@ public:
 								   });
 	}
 
-	inline void Render(const Texture2D& alienTexture, const Texture2D& projectileTexture) const noexcept
+	inline void Render(const Texture2D& alienTexture, const Texture2D& projectileTexture) const
 	{
 		RenderEntityVector(alienSpan, alienTexture);
 		RenderEntityVector(alienLasers, projectileTexture);

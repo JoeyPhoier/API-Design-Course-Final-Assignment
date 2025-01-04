@@ -71,7 +71,7 @@ private:
 	void CollisionChecks() noexcept;
 	void CleanUpDeadEntities();
 
-	void Render() const noexcept;
+	void Render() const;
 public:
 	void Loop();
 };
