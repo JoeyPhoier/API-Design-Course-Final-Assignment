@@ -28,7 +28,7 @@
 void Game::StartGameplay()
 {
 	score = 0;
-	if (FileExists("Level.sig"))
+	if (FileExists(levelFileName.c_str()))
 	{
 		LoadLevelFromFile();
 	}
@@ -61,7 +61,7 @@ void Game::LoadLevelFromFile()
 
 	MyVariableLoader inFile(levelFileName);
 	inFile.Load(player);
-	inFile.Load(alienArmy.alienSpan);
+	inFile.Load(alienArmy);
 	inFile.Load(barriers);
 	inFile.Load(background);
 }
@@ -70,7 +70,7 @@ void Game::SaveLevelToFile() const
 {
 	MyVariableSaver outFile(levelFileName);
 	outFile.Save(player);
-	outFile.Save(alienArmy.alienSpan);
+	outFile.Save(alienArmy);
 	outFile.Save(barriers);
 	outFile.Save(background);
 }

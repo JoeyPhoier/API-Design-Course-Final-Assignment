@@ -42,4 +42,17 @@ public:
 	void CheckForLaserInput(std::vector<Projectile>& playerLasers) noexcept;
 
 	void Render(const Texture2D& texture) const noexcept override;
+
+	void Serialize(MyVariableSaver& outFile) const override
+	{
+		BaseEntity::Serialize(outFile);
+		outFile.Save(currHealth);
+
+	}
+	void Unserialize(MyVariableLoader& inFile) override
+	{
+		BaseEntity::Unserialize(inFile);
+		currLaserCooldown = 0;
+		inFile.Load(currHealth);
+	}
 };

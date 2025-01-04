@@ -6,6 +6,7 @@
 #include <format>
 #include <sstream>
 #include <array>
+#include "VariableSaveSystem.h"
 
 struct PlayerData;	//Defined below Leaderboad
 
@@ -15,6 +16,8 @@ public:
 	using ScoreType = unsigned int;
 
 private:
+	std::string leaderboardFileName = "Leaderboard.sig";
+
 	std::vector<PlayerData> dataTable;
 	
 	std::string playerName = "";
@@ -52,4 +55,15 @@ struct PlayerData
 {
 	std::string name;
 	Leaderboard::ScoreType score = 0;
+
+	void Serialize(MyVariableSaver& outFile) const
+	{
+		outFile.Save(name);
+		outFile.Save(score);
+	}
+	void Unserialize(MyVariableLoader& inFile)
+	{
+		inFile.Load(name);
+		inFile.Load(score);
+	}
 };

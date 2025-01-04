@@ -40,4 +40,16 @@ public:
 				 static_cast<int>(position.y + textOffset.y),
 				 40, RED);
 	}
+
+	void Serialize(MyVariableSaver& outFile) const override
+	{
+		BaseEntity::Serialize(outFile);
+		outFile.Save(currHealth);
+
+	}
+	void Unserialize(MyVariableLoader& inFile) override
+	{
+		BaseEntity::Unserialize(inFile);
+		inFile.Load(currHealth);
+	}
 };

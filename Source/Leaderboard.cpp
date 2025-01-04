@@ -1,8 +1,7 @@
 #include "Leaderboard.h"
 #include <format>
 #include <algorithm>
-#include <iostream>
-#include <fstream>
+#include <gsl/gsl>
 
 //This is required due to a raylib bug in the CheckCollisionPointRec
 inline static bool FixedCheckCollisionPointRec(const Vector2& point, Rectangle rectangle) noexcept
@@ -15,37 +14,19 @@ void Leaderboard::LoadLeaderboard()
 {
 	dataTable.clear();
 
-	std::ifstream input("Leaderboard.sig", std::ios::binary | std::ios::skipws);
-	if (input.fail())
+	if (!FileExists(leaderboardFileName.c_str()))
 	{
 		return;
 	}
 
-	size_t entryCount = 0;
-	input.read(std::bit_cast<char*>(&entryCount), sizeof(size_t));
-	dataTable.resize(entryCount);
-	for (auto& entry : dataTable)
-	{
-		size_t nameSize = 0;
-		input.read(std::bit_cast<char*>(&nameSize), sizeof(nameSize));
-		entry.name.resize(nameSize);
-		input.read(std::bit_cast<char*>(&entry.name.front()), nameSize);
-		input.read(std::bit_cast<char*>(&entry.score), sizeof(unsigned int));
-	}
+	MyVariableLoader inFile(leaderboardFileName);
+	inFile.Load(dataTable);
 }
 
 void Leaderboard::SaveLeaderboard() const
 {
-	std::ofstream outfile("Leaderboard.sig", std::ios::binary);
-	const size_t entryCount = dataTable.size();
-	outfile.write(std::bit_cast<const char*>(&entryCount), sizeof(size_t));
-	for (const auto& entry : dataTable)
-	{
-		const size_t nameSize = entry.name.size();
-		outfile.write(std::bit_cast<const char*>(&nameSize), sizeof(nameSize));
-		outfile.write(&entry.name.front(), nameSize);
-		outfile.write(std::bit_cast<const char*>(&entry.score), sizeof(unsigned int));
-	}
+	MyVariableSaver outFile(leaderboardFileName);
+	outFile.Save(dataTable);
 }
 
 void Leaderboard::PrepareLeaderboard(ScoreType score)
@@ -96,7 +77,7 @@ void Leaderboard::TextboxWritingInput() noexcept
 	{
 		if (const bool IsKeyAValidCharacter = (key >= 32) && (key <= 125))
 		{
-			playerName += static_cast<char>(key);
+			playerName += gsl::narrow_cast<char>(key);
 		}
 		key = GetCharPressed();  // Check next character in the queue
 	}

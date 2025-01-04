@@ -5,6 +5,7 @@
 #include <concepts>
 #include <type_traits>
 #include <utility>
+#include "VariableSaveSystem.h"
 
 class BaseEntity
 {
@@ -38,13 +39,21 @@ public:
 	{
 		DrawTextureQuick(texture, position, renderScale);
 	}
+
+	virtual void Serialize(MyVariableSaver& outFile) const
+	{
+		outFile.Save(position);
+	}
+	virtual void Unserialize(MyVariableLoader& inFile)
+	{
+		inFile.Load(position);
+	}
 };
 
 template <typename V>
-concept is_VectorOfDerivedFromEntity = std::is_same_v<V, std::vector<typename std::remove_cvref_t<V>::value_type>> &&
-									std::is_base_of_v<BaseEntity, typename V::value_type>;
+concept is_VectorOfEntityClasses = is_Vector<V> && std::is_base_of_v<BaseEntity, typename V::value_type>;
 
-void RenderEntityVector(const is_VectorOfDerivedFromEntity auto& entityVector, const Texture2D& texture) noexcept
+void RenderEntityVector(const is_VectorOfEntityClasses auto& entityVector, const Texture2D& texture) noexcept
 {
 	for (const auto& entity : entityVector)
 	{

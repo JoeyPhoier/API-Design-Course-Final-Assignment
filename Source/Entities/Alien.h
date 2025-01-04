@@ -57,4 +57,16 @@ public:
 		RenderEntityVector(alienSpan, alienTexture);
 		RenderEntityVector(alienLasers, projectileTexture);
 	}
+
+	void Serialize(MyVariableSaver& outFile) const
+	{
+		outFile.Save(alienSpan);
+		outFile.Save(Alien::speed);
+	}
+	void Unserialize(MyVariableLoader& inFile)
+	{
+		inFile.Load(alienSpan);
+		currLaserCooldown = 0;
+		inFile.Load(Alien::speed);
+	}
 };

@@ -81,7 +81,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)Build\$(Configuration)\</OutDir>
     <LibraryPath>$(SolutionDir)External\raylib\lib;$(LibraryPath)</LibraryPath>
-    <IncludePath>$(SolutionDir)Source;$(SolutionDir)Source\Resources;$(SolutionDir)Source\Entities;$(SolutionDir)External\raylib\include;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Source;$(SolutionDir)Source\Resources;$(SolutionDir)Source\Entities;$(SolutionDir)External\GSL-4.1.0\include;$(SolutionDir)External\raylib\include;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
     <IntDir>Build\Intermediate\$(Configuration)\</IntDir>
     <RunCodeAnalysis>false</RunCodeAnalysis>
     <CodeAnalysisRuleSet>CppCoreCheckRules.ruleset</CodeAnalysisRuleSet>

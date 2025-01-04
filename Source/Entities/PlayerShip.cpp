@@ -1,6 +1,5 @@
 #include "PlayerShip.h"
 
-
 void PlayerShip::Reset() noexcept
 {
 	const auto HalfWidth = static_cast<float>(GetScreenWidth()) * .5f;
