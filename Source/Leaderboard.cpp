@@ -110,7 +110,7 @@ void Leaderboard::UpdateNameTextBox(ScoreType score)
 	}
 }
 
-void Leaderboard::RenderTextBox() const noexcept
+void Leaderboard::RenderTextBox() const
 {
 	constexpr int textBoxThickness = 3;
 	DrawRectangleRec(textboxRectangle, LIGHTGRAY);
@@ -131,7 +131,7 @@ void Leaderboard::RenderTextBox() const noexcept
 	DrawText("PLACE MOUSE OVER INPUT BOX!", 600, 400, 20, YELLOW);
 }
 
-void Leaderboard::RenderLeaderboardData() const noexcept
+void Leaderboard::RenderLeaderboardData() const
 {
 	int yOffset = 0;
 	for (const auto& [name, score] : dataTable)
@@ -159,7 +159,7 @@ void Leaderboard::InsertNewHighScore(const PlayerData& data)
 	SaveLeaderboard();
 }
 
-void Leaderboard::Render() const noexcept
+void Leaderboard::Render() const
 {
 	if (isInInputNameScreen)
 	{

@@ -38,8 +38,8 @@ private:
 	void LoadLeaderboard();
 	void SaveLeaderboard() const;
 
-	void RenderTextBox() const noexcept;
-	void RenderLeaderboardData() const noexcept;
+	void RenderTextBox() const;
+	void RenderLeaderboardData() const;
 public:
 	void PrepareLeaderboard(ScoreType score);
 	bool ShouldExitLeaderboard() const noexcept
@@ -48,7 +48,7 @@ public:
 	}
 
 	void Update(ScoreType score);
-	void Render() const noexcept;
+	void Render() const;
 };
 
 struct PlayerData

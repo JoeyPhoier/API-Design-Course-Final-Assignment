@@ -41,7 +41,7 @@ public:
 	void Update() noexcept override;
 	void CheckForLaserInput(std::vector<Projectile>& playerLasers) noexcept;
 
-	void Render(const Texture2D& texture) const override;
+	void Render(const Texture2D& texture) const noexcept override;
 
 	void Serialize(MyVariableSaver& outFile) const override
 	{

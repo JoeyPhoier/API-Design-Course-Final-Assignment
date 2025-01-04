@@ -76,7 +76,7 @@ public:
 	void Loop();
 };
 
-bool CollisionCheck_ProjectileVSEntityVector(Projectile& projectile, is_VectorOfEntityClasses auto& entityVector) noexcept
+static bool CollisionCheck_ProjectileVSEntityVector(Projectile& projectile, is_VectorOfEntityClasses auto& entityVector) noexcept
 {
 	for (auto& entity : entityVector)
 	{

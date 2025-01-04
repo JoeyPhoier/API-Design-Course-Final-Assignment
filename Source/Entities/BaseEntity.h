@@ -35,10 +35,12 @@ public:
 	}
 
 	virtual void Update() noexcept = 0;
-	virtual void Render(const Texture2D& texture) const 
+#pragma warning(disable : 26440)
+	virtual void Render(const Texture2D& texture) const
 	{
 		DrawTextureQuick(texture, position, renderScale);
 	}
+#pragma warning(default : 26440)
 
 	virtual void Serialize(MyVariableSaver& outFile) const
 	{
