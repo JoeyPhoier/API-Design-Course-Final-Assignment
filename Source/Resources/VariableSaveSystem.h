@@ -5,6 +5,7 @@
 #include <vector>
 #include <type_traits>
 #include <stdexcept>
+#include <span>
 
 class MyVariableSaver;
 class MyVariableLoader;
@@ -16,11 +17,10 @@ template <typename T>
 concept is_Custom_Saveable = requires (T t, MyVariableSaver& saver) { { t.Serialize(saver) } -> std::same_as<void>; } &&
 							 requires (T t, MyVariableLoader& loader) { { t.Unserialize(loader) } -> std::same_as<void>; };
 
-template <typename V>
-concept is_Vector = std::is_same_v<V, std::vector<typename std::remove_cvref_t<V>::value_type>>;
-
-template <typename S>
-concept is_String = std::same_as<S, std::string>;
+template <typename C>
+concept is_Container = requires(C c) { { c.begin() } -> std::input_or_output_iterator;
+									   { c.end() } -> std::input_or_output_iterator;
+									   { c.size() } -> std::convertible_to<std::size_t>; };
 
 class MyVariableSaver
 {
@@ -39,29 +39,18 @@ public:
 		classInstanceToSave.Serialize(*this);
 	}
 
-	void Save(const is_Vector auto& classVectorToSave)
+	void Save(const is_Container auto& classContainerToSave)
 	{
-		const size_t count = classVectorToSave.size();
+		const size_t count = classContainerToSave.size();
 		Save(count);
 		if (count == 0)
 		{
 			return;
 		}
-		for (const auto& instance : classVectorToSave)
+		for (const auto& instance : classContainerToSave)
 		{
 			Save(instance);
 		}
-	}
-
-	void Save(const is_String auto& stringToSave)
-	{
-		const size_t count = stringToSave.size();
-		Save(count);
-		if (count == 0)
-		{
-			return;
-		}
-		outFile.write(std::bit_cast<char*>(&stringToSave.front()), count * sizeof(char));
 	}
 };
 
@@ -82,7 +71,7 @@ public:
 		classInstanceToLoad.Unserialize(*this);
 	}
 
-	void Load(is_Vector auto& classVectorToLoad)
+	void Load(is_Container auto& classVectorToLoad)
 	{
 		size_t count = 0;
 		Load(count);
@@ -95,17 +84,5 @@ public:
 		{
 			Load(instance);
 		}
-	}
-
-	void Load(is_String auto& stringToLoad)
-	{
-		size_t count = 0;
-		Load(count);
-		stringToLoad.resize(count);
-		if (count == 0)
-		{
-			return;
-		}
-		inFile.read(std::bit_cast<char*>(&stringToLoad.front()), count * sizeof(char));
 	}
 };
