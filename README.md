@@ -1,3 +1,4 @@
-# SpaceInvaders_Liv_Erik
+# Space Invaders - API Design Course : Final Assignment
 
-pain game assignment 2
+This was a project for the final assignment of the API Design Course;
+We were tasked with redesigning and restructuring the codebase of a given template project.
