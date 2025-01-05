@@ -53,7 +53,7 @@ public:
 };
 
 template <typename V>
-concept is_VectorOfEntityClasses = is_Vector<V> && std::is_base_of_v<BaseEntity, typename V::value_type>;
+concept is_VectorOfEntityClasses = is_Container<V> && std::is_base_of_v<BaseEntity, typename V::value_type>;
 
 void RenderEntityVector(const is_VectorOfEntityClasses auto& entityVector, const Texture2D& texture)
 {
