@@ -61,7 +61,7 @@ public:
 		{
 			return;
 		}
-		outFile.write(std::bit_cast<char*>(&stringToSave[0]), count * sizeof(char));
+		outFile.write(std::bit_cast<char*>(&stringToSave.front()), count * sizeof(char));
 	}
 };
 
@@ -106,6 +106,6 @@ public:
 		{
 			return;
 		}
-		inFile.read(std::bit_cast<char*>(&stringToLoad[0]), count * sizeof(char));
+		inFile.read(std::bit_cast<char*>(&stringToLoad.front()), count * sizeof(char));
 	}
 };
