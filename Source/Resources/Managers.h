@@ -1,16 +1,5 @@
 #pragma once
 #include "raylib.h"
-#include "MyTexture2D.h"
-
-//Textures
-struct TextureManager
-{
-	MyTexture2D playerTexture = MyTexture2D("./Assets/PlayerShip.png");
-	MyTexture2D alienTexture = MyTexture2D("./Assets/Alien.png");
-	MyTexture2D projectileTexture = MyTexture2D("./Assets/Laser.png");
-	MyTexture2D barrierTexture = MyTexture2D("./Assets/Barrier.png");
-	MyTexture2D backgroundTexture = MyTexture2D("./Assets/Space Background.png");
-};
 
 //Window
 class WindowManager
