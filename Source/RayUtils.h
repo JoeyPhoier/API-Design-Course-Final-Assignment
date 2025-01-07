@@ -1,27 +1,27 @@
 #pragma once
 #include "raylib.h"
 
-inline static void DrawTextureQuick(const Texture2D& texture, Vector2 position, float scale) noexcept
+inline static void DrawTextureQuick_WithSource(const Texture2D& texture, Rectangle source, Vector2 position, float scale) noexcept
 {
-	DrawTexturePro(texture,
-		{
-			0,
-			0,
-			static_cast<float>(texture.width),
-			static_cast<float>(texture.height),
-		},
+	DrawTexturePro(texture, source,
 		{
 			position.x,
 			position.y,
-			texture.width * scale,
-			texture.height * scale,
+			source.width * scale,
+			source.height * scale,
 		},
 		{
-			texture.width * scale * 0.5f,
-			texture.height * scale * 0.5f
+			source.width * scale * 0.5f,
+			source.height * scale * 0.5f
 		},
 		0,
 		WHITE);
+}
+
+inline static void DrawTextureQuick(const Texture2D& texture, Vector2 position, float scale) noexcept
+{
+	const Rectangle source{ 0, 0, static_cast<float>(texture.width), static_cast<float>(texture.height), };
+	DrawTextureQuick_WithSource(texture, source, position, scale);
 }
 
 //Raylib has a couple of these operations builtin, such as Vector2Subtract, but these take the vectors in by value.

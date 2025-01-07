@@ -1,0 +1,4 @@
+# <PositionX> <PositionY> <SourceWidth> <SourceHeight> <Time Hold Target>
+0 0 352 352 1
+352 0 352 352 1
+704 0 352 352 1 

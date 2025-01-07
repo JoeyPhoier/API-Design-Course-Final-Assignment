@@ -32,9 +32,9 @@ public:
 	}
 
 	void Update() noexcept override { /*Does not require any Updating operations.*/ };
-	void Render(const Texture2D& texture) const override
+	void Render(const TextureLibrary& textureLib) const override
 	{
-		BaseEntity::Render(texture);
+		RenderSimpleTexture(textureLib.barrierTexture);
 		DrawText(std::format("{}", currHealth).c_str(),
 				 static_cast<int>(position.x + textOffset.x),
 				 static_cast<int>(position.y + textOffset.y),

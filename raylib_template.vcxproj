@@ -180,6 +180,8 @@
     <ClInclude Include="Source\game.h" />
     <ClInclude Include="Source\Leaderboard.h" />
     <ClInclude Include="Source\RayUtils.h" />
+    <ClInclude Include="Source\Resources\MyAnimation2D.h" />
+    <ClInclude Include="Source\Resources\TextureLibrary.h" />
     <ClInclude Include="Source\Resources\VariableSaveSystem.h" />
     <ClInclude Include="Source\Resources\MyTexture2D.h" />
     <ClInclude Include="Source\Resources\Managers.h" />

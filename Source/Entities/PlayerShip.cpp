@@ -33,12 +33,7 @@ void PlayerShip::Update() noexcept
 		position.x = RightEdge;
 	}
 
-	currSpriteTimer += GetFrameTime();
-	if (currSpriteTimer >= maxSpriteTimer)
-	{
-		currSpriteTimer = 0;
-		activeTexture = (activeTexture + 1) % 3;
-	}
+	animator.Update();
 }
 
 void PlayerShip::CheckForLaserInput(std::vector<Projectile>& playerLasers) noexcept
@@ -57,19 +52,9 @@ void PlayerShip::CheckForLaserInput(std::vector<Projectile>& playerLasers) noexc
 	}
 }
 
-void PlayerShip::Render(const Texture2D& texture) const noexcept
+void PlayerShip::Render(const TextureLibrary& textureLib) const
 {
-	const auto spriteSquareSide = static_cast<float>(texture.height);
-	const Rectangle source = { activeTexture * spriteSquareSide, 0, spriteSquareSide, spriteSquareSide };
-	const Rectangle dest = {
-		position.x,
-		position.y,
-		spriteSquareSide * renderScale,
-		spriteSquareSide * renderScale,
-	};
-	const Vector2 origin = {
-		spriteSquareSide * 0.5f * renderScale,
-		spriteSquareSide * 0.5f * renderScale
-	};
-	DrawTexturePro(texture, source, dest, origin, 0, WHITE);
+	animator.UpdateFrameData(textureLib.playerAnimation);
+	Rectangle source = animator.GetSourceRectangle(textureLib.playerAnimation);
+	DrawTextureQuick_WithSource(textureLib.playerAnimation.GetTexture(), source, position, renderScale);
 }

@@ -74,5 +74,11 @@
     <ClInclude Include="Source\Resources\VariableSaveSystem.h">
       <Filter>Header Files\Resources</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Resources\MyAnimation2D.h">
+      <Filter>Header Files\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Resources\TextureLibrary.h">
+      <Filter>Header Files\Resources</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

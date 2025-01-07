@@ -20,6 +20,10 @@ public:
 	Alien() noexcept = default;
 	explicit Alien(Vector2 spawnPoint) noexcept : BaseEntity(spawnPoint) {};
 	void Update() noexcept override;
+	void Render(const TextureLibrary& textureLib) const override
+	{
+		RenderSimpleTexture(textureLib.alienTexture);
+	}
 };
 
 class AlienArmy final
@@ -44,6 +48,7 @@ public:
 
 	void UpdateAlienShooting() noexcept;
 	void Update() noexcept;
+
 	[[nodiscard]] inline bool HasAlienReachedPlayer(const Vector2& playerPosition, const float playerRadius) const noexcept
 	{
 		return std::ranges::any_of(alienSpan, [&](const Alien& alien)
@@ -52,10 +57,10 @@ public:
 								   });
 	}
 
-	inline void Render(const Texture2D& alienTexture, const Texture2D& projectileTexture) const
+	inline void Render(const TextureLibrary& textureLib) const
 	{
-		RenderEntityVector(alienSpan, alienTexture);
-		RenderEntityVector(alienLasers, projectileTexture);
+		RenderEntityVector(alienSpan, textureLib);
+		RenderEntityVector(alienLasers, textureLib);
 	}
 
 	void Serialize(MyVariableSaver& outFile) const

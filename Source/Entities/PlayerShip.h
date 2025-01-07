@@ -3,20 +3,18 @@
 #include "BaseEntity.h"
 #include "Projectile.h"
 #include <vector>
+#include "MyAnimation2D.h"
 
 class PlayerShip final : public BaseEntity
 {
 private: 
 	static constexpr unsigned int maxHealth = 3;
-
 	static constexpr float speed = 7;
-	
-	static constexpr float maxSpriteTimer = .5f;
-	float currSpriteTimer = maxSpriteTimer;
-	unsigned int activeTexture = 0;
 
 	static constexpr float maxLaserCooldown = 0.4f;
 	float currLaserCooldown = 0;
+
+	MyAnimator2D animator;
 public:
 	static constexpr float radius = 50;
 	unsigned int currHealth = maxHealth;
@@ -41,7 +39,7 @@ public:
 	void Update() noexcept override;
 	void CheckForLaserInput(std::vector<Projectile>& playerLasers) noexcept;
 
-	void Render(const Texture2D& texture) const noexcept override;
+	void Render(const TextureLibrary& textureLib) const override;
 
 	void Serialize(MyVariableSaver& outFile) const override
 	{

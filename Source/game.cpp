@@ -168,7 +168,7 @@ void Game::CleanUpDeadEntities()
 	std::erase_if(alienArmy.alienLasers, IsEntityDead);
 }
 
-void Game::Render() const 
+void Game::Render() 
 {
 	switch (gameState)
 	{
@@ -177,11 +177,11 @@ void Game::Render() const
 		DrawText("PRESS SPACE TO BEGIN", 200, 350, 40, YELLOW);
 		break;
 	case State::GAMEPLAY:
-		background.Render(textures.backgroundTexture);
-		RenderEntityVector(playerLasers, textures.projectileTexture);
-		RenderEntityVector(barriers, textures.barrierTexture);
-		player.Render(textures.playerTexture);
-		alienArmy.Render(textures.alienTexture, textures.projectileTexture);
+		background.Render(textures);
+		RenderEntityVector(playerLasers, textures);
+		RenderEntityVector(barriers, textures);
+		player.Render(textures);
+		alienArmy.Render(textures);
 
 		DrawText(std::format("Score: {}", score).c_str(), 50, 20, 40, YELLOW);
 		DrawText(std::format("Lives: {}", player.currHealth).c_str(), 50, 70, 40, YELLOW);

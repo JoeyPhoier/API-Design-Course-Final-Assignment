@@ -5,6 +5,9 @@
 #include "MyTexture2D.h"
 #include <format>
 #include <stdexcept>
+#include <string>
+#include <fstream>
+#include <sstream>
 
 class AnimationException : public std::runtime_error
 {
@@ -49,27 +52,44 @@ class MyAnimation2D
 		return (index + 1) % frames.size();
 	}
 
-	[[nodiscard]] inline const Texture& GetTexture() const noexcept
-	{
-		return spriteSheet.get();
-	}
-
 public:
 	explicit MyAnimation2D(std::string_view spriteSheetPath, std::string_view animationAtlasPath) : spriteSheet(spriteSheetPath)
 	{
-		//TODO: implement frame loading here
+		std::ifstream inFile(animationAtlasPath.data());
+		std::string buffer;
+		while (std::getline(inFile, buffer) && buffer.size() > 0)
+		{
+			if (buffer.front() == '#')
+			{
+				continue;
+			}
+			std::istringstream stringStream(buffer);
+			Rectangle rec;
+			float holdTime = 0;
+			stringStream >> rec.x >> rec.y >> rec.width >> rec.height >> holdTime;
+			frames.emplace_back(rec, holdTime);
+		}
+	}
+
+	[[nodiscard]] inline const Texture& GetTexture() const noexcept
+	{
+		return spriteSheet.get();
 	}
 };
 
 class MyAnimator2D
 {
-	size_t currentFrameIndex = 0;
-	float currentFrameTime = 0;
+	mutable size_t currentFrameIndex = 0;
+	mutable float currentFrameTime = 0;
 
 public:
-	void UpdateFrameData(const MyAnimation2D& animation)
+	void Update() noexcept
 	{
 		currentFrameTime += GetFrameTime();
+	}
+
+	void UpdateFrameData(const MyAnimation2D& animation) const 
+	{
 		float currentFrameHoldTime = animation.GetFrameHoldTime(currentFrameIndex);
 		while (currentFrameTime >= currentFrameHoldTime)
 		{
@@ -80,11 +100,6 @@ public:
 	}
 
 	[[nodiscard]] Rectangle GetSourceRectangle(const MyAnimation2D& animation) const 
-	{
-		return animation.GetFrameSource(currentFrameIndex);
-	}
-
-	[[nodiscard]] Rectangle GetTexture(const MyAnimation2D& animation) const
 	{
 		return animation.GetFrameSource(currentFrameIndex);
 	}

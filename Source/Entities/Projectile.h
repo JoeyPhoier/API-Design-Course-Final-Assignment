@@ -22,5 +22,10 @@ public:
 			Damage();
 		}
 	}
+
+	void Render(const TextureLibrary& textureLib) const override
+	{
+		RenderSimpleTexture(textureLib.projectileTexture);
+	}
 };
 

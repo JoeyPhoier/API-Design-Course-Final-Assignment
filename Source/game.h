@@ -9,6 +9,7 @@
 #include "Alien.h"
 #include "Leaderboard.h"
 #include "Managers.h"
+#include "TextureLibrary.h"
 
 class Background final
 {
@@ -24,9 +25,9 @@ public:
 		const float halfScreenWidth = static_cast<float>(GetScreenWidth()) * .5f;
 		position.x = halfScreenWidth - ((playerPosition.x - halfScreenWidth) / 15);
 	}
-	void Render(const Texture2D& texture) const noexcept
+	void Render(const TextureLibrary& textureLib) const noexcept
 	{
-		DrawTextureQuick(texture, position, renderScale);
+		DrawTextureQuick(textureLib.backgroundTexture, position, renderScale);
 	}
 };
 
@@ -38,7 +39,7 @@ private:
 	std::string windowName = "SPACE INVADERS";
 	WindowManager window = WindowManager(resolution, windowName);
 	AudioManager audio;
-	TextureManager textures;
+	TextureLibrary textures;
 
 	std::string levelFileName = "Level.sig";
 
@@ -71,7 +72,7 @@ private:
 	void CollisionChecks() noexcept;
 	void CleanUpDeadEntities();
 
-	void Render() const;
+	void Render();
 public:
 	void Loop();
 };

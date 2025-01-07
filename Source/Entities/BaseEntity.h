@@ -6,12 +6,18 @@
 #include <type_traits>
 #include <utility>
 #include "VariableSaveSystem.h"
+#include "TextureLibrary.h"
 
 class BaseEntity
 {
 protected:
 	bool isAlive = true;
 	static constexpr float renderScale = .3f;
+
+	virtual void RenderSimpleTexture(const Texture2D& texture) const noexcept
+	{
+		DrawTextureQuick(texture, position, renderScale);
+	}
 public:
 	Vector2 position = { 0, 0 };
 
@@ -35,12 +41,7 @@ public:
 	}
 
 	virtual void Update() noexcept = 0;
-#pragma warning(disable : 26440)
-	virtual void Render(const Texture2D& texture) const
-	{
-		DrawTextureQuick(texture, position, renderScale);
-	}
-#pragma warning(default : 26440)
+	virtual void Render(const TextureLibrary& textureLib) const = 0;
 
 	virtual void Serialize(MyVariableSaver& outFile) const
 	{
@@ -55,10 +56,10 @@ public:
 template <typename V>
 concept is_VectorOfEntityClasses = is_Container<V> && std::is_base_of_v<BaseEntity, typename V::value_type>;
 
-void RenderEntityVector(const is_VectorOfEntityClasses auto& entityVector, const Texture2D& texture)
+void RenderEntityVector(const is_VectorOfEntityClasses auto& entityVector, const TextureLibrary& textureLib)
 {
 	for (const auto& entity : entityVector)
 	{
-		entity.Render(texture);
+		entity.Render(textureLib);
 	}
 }
